@@ -9,41 +9,6 @@
  ****************************************************************************
  */
 
-/* Bonus and malus */
-/*#define	ROOK_OPEN_COL               25
-#define PAIR_BISHOPS                25
-#define ADV_TURN_TO_MOVE            10
-#define DOUBLED_PAWN_MALUS          15
-#define DOUBLED_PAWN_CASTLE_MALUS   25
-#define MISSING_PAWN_CASTLE_MALUS   20
-#define HOLE_C3_C6_F3_F6            30
-#define HOLE_B3_B6_G3_G6            30
-#define TRAPPED_ROOK_PENALTY        70*/
-
-/* Arrays for scaling mobility values */
-int mob_rook[16] = {
-    -6, -3, 0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19, 20
-};
-int mob_knight[9] = {
-    -10, -4, 2, 8, 14, 18, 22, 24, 25
-};
-int mob_bishop[16] = {
-    -5, -2, 0, 3, 6, 10, 14, 20, 24, 28, 31, 35, 40, 42, 45, 47
-};
-int range_bishop[16] = {
-    -6, -3, 0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19, 20
-};
-
-/* For scaling passed pawns depending on the row */
-int passed_pawn_white[7] = {0, 10, 12, 15, 35, 55, 70};
-int passed_pawn_black[7] = {70, 55, 35, 15, 12, 10, 0};
-
-/* Kings' safety */
-int posWhiteKing = 0;
-int colWhiteKing = 0;
-int posBlackKing = 0;
-int colBlackKing = 0;
-
 /* To count the material */
 int whitePawns = 0;
 int whiteKnights = 0;
@@ -56,12 +21,6 @@ int blackBishops = 0;
 int blackRooks = 0;
 int blackQueens = 0;
 
-
-/* Pawn's info */
-int whitePawnsInfo[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-int blackPawnsInfo[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-
 /* The evaluation function */
 int Eval (alpha, beta)
 {
@@ -69,12 +28,6 @@ int Eval (alpha, beta)
     int i;
 
     /* Set some values to 0 */
-    /* Pawn's info */
-    for (i=0; i<8; ++i)
-    {
-        whitePawnsInfo[i] = 0;
-        blackPawnsInfo[i] = 0;
-    }
 
     /* The vars for counting the material */
     whitePawns = 0;
@@ -102,7 +55,6 @@ int Eval (alpha, beta)
             {
             case PAWN:
                 whitePawns++;
-                whitePawnsInfo[(int)Col(i)] += 1<<Row(i);
                 break;
             case KNIGHT:
                 whiteKnights++;
@@ -117,8 +69,6 @@ int Eval (alpha, beta)
                 whiteQueens++;
                 break;
             case KING:
-                posWhiteKing = i;
-                colWhiteKing = Col(i);
                 break;
             }
         }
@@ -128,7 +78,6 @@ int Eval (alpha, beta)
             {
             case PAWN:
                 blackPawns++;
-                blackPawnsInfo[(int)Col(i)] += 1<<Row(i);
                 break;
             case KNIGHT:
                 blackKnights++;
@@ -143,8 +92,6 @@ int Eval (alpha, beta)
                 blackQueens++;
                 break;
             case KING:
-                posBlackKing = i;
-                colBlackKing = Col(i);
                 break;
             }
         }
