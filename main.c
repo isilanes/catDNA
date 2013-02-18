@@ -7,11 +7,7 @@
 #include "data.h"
 #include "protos.h"
 
-//#define NDEBUG
-//#include <assert.h>
-
-void
-startgame ()
+void startgame ()
 {
     int i;
     for (i = 0; i < 64; ++i)
@@ -315,8 +311,7 @@ void test7()
     hash_key_position(); /* hash de la posicion inicial */
 }
 
-void
-xboard ()
+void xboard ()
 {
     char line[256], command[256], c;
     int from, dest, i;
@@ -435,16 +430,13 @@ xboard ()
         /* Tomado de TSCP recibimos del GUI el tiempo que nos queda */
         if (!strcmp(command, "time"))
         {
-            sscanf (line, "time %d", &max_time);
+            //sscanf (line, "time %d", &max_time);
+            sscanf (line, "time %ld", &max_time);
             /*pasamos a milisegundos que es como trabajamos internamente*/
             max_time *= 10;
             max_time /= 10;
             max_time -= 300;
             total_time = max_time;
-
-//            if (total_time < 3000)
-//                max_depth = 6;
-//            else
             max_depth = 32;
             continue;
         }
@@ -515,9 +507,6 @@ xboard ()
                     }
                 }
 
-//                if (moveBuf[i].type_of_move > 8)
-//                    printf ("type of move the best %d \n", moveBuf[i].type_of_move);
-
                 if (MakeMove (moveBuf[i]))
                 {
                     goto continuar;	/* legal move */
@@ -535,12 +524,8 @@ continuar:
     }
 }
 
-
-
-int
-main ()
+int main ()
 {
-
     char linea[256];
     char args[4][64];
 
@@ -564,7 +549,7 @@ main ()
     MOVE theBest;
     int movecnt;
 
-    puts ("Kitteneitor, by Emilio Diaz");
+    puts ("catDNA, by Iñaki Silanes");
     puts (" Help");
     puts (" d: display board");
     puts (" MOVE: make a move (e.g. b1c3, a7a8q, e1g1)");
@@ -583,9 +568,6 @@ main ()
         {   /* Computer's turn */
 
             theBest = ComputerThink (max_depth);
-
-//            if (theBest.type_of_move /*> 8*/)
-//                printf ("type of move the best %d \n", theBest.type_of_move);
 
             MakeMove (theBest);
 
@@ -703,28 +685,13 @@ main ()
         }
         if (!strcmp (s, "sd"))
         {
-            scanf ("%d", &max_depth);
+            int ret = scanf ("%d", &max_depth);
             continue;
         }
 
-//        if (!strcmp (s, "fen"))
-//        {
-//            strcpy (fenstring, "");
-
-//            sscanf (linea, "fen %s %s %s %s", args[0], args[1], args[2],
-//                    args[3]);
-
-//            strcat (fenstring, args[0]);
-//            strcat (fenstring, args[1]);
-//            strcat (fenstring, args[2]);
-//            strcat (fenstring, args[3]);
-
-//            fen (fenstring);
-//        }
-
         if (!strcmp (s, "perft"))
         {
-            scanf ("%d", &max_depth);
+            int ret = scanf ("%d", &max_depth);
             clock_t start;
             clock_t stop;
             double t = 0.0;
@@ -850,7 +817,6 @@ void PrintResult(int count, MOVE *ListMoves)
         }
 }
 
-
 /*************************************************************************************
         Funciones para detectar repeticion de movimientos
 **************************************************************************************/
@@ -891,8 +857,6 @@ void hash_key_position()
             hash.key ^= hash.piece[color[i]][piece[i]][i];
     if (side == BLACK)
         hash.key ^= hash.side;
-//    if (enpasant != -1)
-//        hash.key ^= hash.ep[enpasant];
 }
 
 /* Devuelve el numero de veces que la posicion se ha repetido */
@@ -927,21 +891,7 @@ void setDistToKing()
           bk_dist[i][j]  = dist_bonus[i][j] * 3;
        }
     }
-//    for (i = 0; i < 64; ++i)
-//    {
-//       for (j = 0; j < 64; ++j)
-//       {
-//           printf (" %d-%d - %d\n", i, j, qk_dist[i][j]);
-//           printf (" %d-%d - %d\n", j, i, qk_dist[j][i]);
-//           printf (" %d-%d - %d\n", i, j, nk_dist[i][j]);
-//           printf (" %d-%d - %d\n", j, i, nk_dist[j][i]);
-//           puts("");
-//       }
-//    }
-
 }
-
-
 
 void fen(const char *s)
 {
@@ -1012,29 +962,4 @@ void fen(const char *s)
         }
         a = i;
     }
-
-//    enpasant = -1;
-
-//    for (i=a+1, z = 0; i<n && z == 0; ++i) {
-//        switch(s[i]) {
-//        case '-': break;
-
-//        case 'a': EPS_SQ = 0; break;
-//        case 'b': EPS_SQ = 1; break;
-//        case 'c': EPS_SQ = 2; break;
-//        case 'd': EPS_SQ = 3; break;
-//        case 'e': EPS_SQ = 4; break;
-//        case 'f': EPS_SQ = 5; break;
-//        case 'g': EPS_SQ = 6; break;
-//        case 'h': EPS_SQ = 7; break;
-//        case '1': EPS_SQ += 56; break;
-//        case '2': EPS_SQ += 48; break;
-//        case '3': EPS_SQ += 40; break;
-//        case '4': EPS_SQ += 32; break;
-//        case '5': EPS_SQ += 24; break;
-//        case '6': EPS_SQ += 16; break;
-//        case '7': EPS_SQ +=  8; break;
-//        case '8': EPS_SQ +=  0; break;
-//        default: z = 1; break;
-//        }
-    }
+}

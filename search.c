@@ -83,20 +83,11 @@ ComputerThink (int m_depth)
 
         bestMove = m;
 
-        /* If the score is too large we just stop thinking */
-//        if (abs(score) > MATE - 10)
-//        {
-//            printf("score = %d\n", score);
-//            fflush(stdout);
-//            break;
-//        }
-
-
         /* After searching, print results in xboard mode
             depth eval time nodes PV*/
         {
             int int_time = (int)(t * 100);
-            printf (" %d  %4d %6d %10d ", i, score, int_time, nodes);
+            printf (" %d  %4d %6d %llu ", i, score, int_time, nodes);
 
             /* Printing PV */
             for(j=0; j<pline.cmove; j++)

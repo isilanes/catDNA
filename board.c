@@ -269,10 +269,8 @@ Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
                 switch (piece[from])
                 {
                 case PAWN:
-                    if (endGame())
-                        move.grade += pst_pawn_endgame[dest] - pst_pawn_endgame[from];
-                    else
-                        move.grade += pst_pawn_midgame[dest] - pst_pawn_midgame[from];
+                    //move.grade += pst_pawn_endgame[dest] - pst_pawn_endgame[from];
+                    move.grade += pst_pawn_midgame[dest] - pst_pawn_midgame[from];
                     break;
                 case KNIGHT:
                     move.grade += mult*(pst_knight[dest] - pst_knight[from]);
@@ -287,10 +285,8 @@ Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
                     move.grade += mult*(pst_queen[dest] - pst_queen[from]);
                     break;
                 case KING:
-                    if (endGame())
-                        move.grade += mult*(pst_king_endgame[dest] - pst_king_endgame[from]);
-                    else
-                        move.grade += mult*(pst_king_midgame[dest] - pst_king_midgame[from]);
+                    //move.grade += mult*(pst_king_endgame[dest] - pst_king_endgame[from]);
+                    move.grade += mult*(pst_king_midgame[dest] - pst_king_midgame[from]);
                     break;
                 }
             }
@@ -299,10 +295,8 @@ Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
                 switch (piece[from])
                 {
                 case PAWN:
-                    if (endGame())
-                        move.grade += pst_pawn_endgame[flip[dest]] - pst_pawn_endgame[flip[from]];
-                    else
-                        move.grade += pst_pawn_midgame[flip[dest]] - pst_pawn_midgame[flip[from]];
+                    //move.grade += pst_pawn_endgame[flip[dest]] - pst_pawn_endgame[flip[from]];
+                    move.grade += pst_pawn_midgame[flip[dest]] - pst_pawn_midgame[flip[from]];
                     break;
                 case KNIGHT:
                     move.grade += mult*(pst_knight[flip[dest]] - pst_knight[flip[from]]);
@@ -317,35 +311,11 @@ Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
                     move.grade += mult*(pst_queen[flip[dest]] - pst_queen[flip[from]]);
                     break;
                 case KING:
-                    if (endGame())
-                        move.grade += mult*(pst_king_endgame[flip[dest]] - pst_king_endgame[flip[from]]);
-                    else
-                        move.grade += mult*(pst_king_midgame[flip[dest]] - pst_king_midgame[flip[from]]);
+                    //move.grade += mult*(pst_king_endgame[flip[dest]] - pst_king_endgame[flip[from]]);
+                    move.grade += mult*(pst_king_midgame[flip[dest]] - pst_king_midgame[flip[from]]);
                     break;
                 }
             }
-            /* Are we placing a piece in a square deffended by a pawn? Sounds like a bad idea */
-//            if  ( piece[from] != PAWN && IsSqProtectedByAPawn(dest, Opponent(color[from])) )
-//                move.grade -= (value_piece[piece[from]]);
-//            /* Is a piece being attacked by a pawn? Then we probably should move it */
-//            if  ( piece[from] != PAWN && IsSqProtectedByAPawn(from, Opponent(color[from])) )
-//                move.grade += (value_piece[piece[from]]);
-
-//            else if  ( piece[from] == QUEEN || piece[from] == ROOK)
-//            {
-//                if (IsSqProtectedByABishop(from, Opponent(color[from])))
-//                    move.grade += (value_piece[piece[from]]);
-//                else if (IsSqProtectedByAKnight(from, Opponent(color[from])) )
-//                    move.grade += (value_piece[piece[from]]);
-//                else if  ( IsSqProtectedByABishop(dest, Opponent(color[from])) )
-//                    move.grade -= (value_piece[piece[from]]);
-//                else if  (IsSqProtectedByAKnight(dest, Opponent(color[from])) )
-//                    move.grade -= (value_piece[piece[from]]);
-//            }
-
-
-            /* Finally we use the history */
-//            move.grade += 1* history[from][dest];
         }
     }
 
