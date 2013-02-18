@@ -114,17 +114,9 @@ ComputerThink (int m_depth)
                }
             }
         }
-//        if (i == m_depth)
-//        {
-//            printf
-//            ("\nSearch result final: move = %c%d%c%d; depth = %d, score = %.2f, time = %.2f s, knps = %.2f\n countCapCalls = %'llu\n countQSearch = %'llu\n moves made = %'llu\n ratio_Qsearc_Capcalls = %.2f\n nodes = %'llu\n",
-//             'a' + Col (bestMove.from), 8 - Row (bestMove.from), 'a' + Col (bestMove.dest),
-//             8 - Row (bestMove.dest), i, decimal_score, t, knps, countCapCalls,
-//             countquiesCalls, count_MakeMove, ratio_Qsearc_Capcalls, nodes);
-//        }
+
         puts("");
         fflush(stdout);
-
     }
     return bestMove;
 }
@@ -136,8 +128,7 @@ ComputerThink (int m_depth)
  ****************************************************************************
  */
 
-int
-Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
+int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
 {
 
     /* Vars deffinition */
@@ -261,8 +252,7 @@ Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
     return alpha;
 }
 
-int
-Quiescent (int alpha, int beta)
+int Quiescent (int alpha, int beta)
 {
     int i;
     int legal = 0;
@@ -312,8 +302,6 @@ Quiescent (int alpha, int beta)
         movescnt = GenCaps (side, qMovesBuf);
         countCapCalls++;
     }
-
-
 
     /* Now the alpha-beta search in quiescent */
     for (i = 0; i < movescnt; ++i)
