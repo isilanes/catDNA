@@ -24,6 +24,7 @@ int blackQueens = 0;
 /* The evaluation function */
 int Eval (alpha, beta)
 {
+    return 0;
     /* The vars for counting the material */
     whitePawns = 0;
     whiteKnights = 0;

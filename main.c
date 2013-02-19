@@ -19,11 +19,11 @@ void startgame ()
     setDistToKing();
 
     side = WHITE;
-    computer_side = BLACK;	/* Human is white side */
+    computer_side = BLACK; /* Human is white side */
     hdp = 0;
     castle = 15;
     fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
+    hash_key_position(); /* hash of initial position */
 }
 
 void xboard ()
@@ -33,7 +33,6 @@ void xboard ()
     MOVE moveBuf[200];
     MOVE theBest;
     int movecnt;
-    //int illegal_king = 0;
 
     printf ("\n");
     startgame ();
@@ -315,13 +314,16 @@ int main ()
 
         /* Get user input */
         printf ("c> ");
+
         if (scanf ("%s", s) == EOF)	/* close program */
             return 0;
+
         if (!strcmp (s, "d"))
         {
             PrintBoard ();
             continue;
         }
+
         if (!strcmp (s, "undo"))
         {
             TakeBack ();
@@ -329,30 +331,35 @@ int main ()
             computer_side = (WHITE + BLACK) - computer_side;
             continue;
         }
+
         if (!strcmp(s,"setboard"))
-              {
-                strcpy(fen_buf, linea);
-                pointer = strstr(fen_buf, " ");
-                pointer++;
-                fen(pointer);
-                continue;
-              }
+        {
+            strcpy(fen_buf, linea);
+            pointer = strstr(fen_buf, " ");
+            pointer++;
+            fen(pointer);
+            continue;
+        }
+
         if (!strcmp (s, "xboard"))
         {
             xboard ();
             return 0;
         }
+
         if (!strcmp (s, "on"))
         {
             computer_side = side;
             continue;
         }
+
         if (!strcmp (s, "pass"))
         {
             side = (WHITE + BLACK) - side;
             computer_side = (WHITE + BLACK) - side;
             continue;
         }
+
         if (!strcmp (s, "sd"))
         {
             int ret = scanf ("%d", &max_depth);
@@ -375,6 +382,7 @@ int main ()
             printf ("time = %'.2f s\n", t);
             continue;
         }
+
         if (!strcmp (s, "quit"))
         {
             printf ("Good bye!\n");

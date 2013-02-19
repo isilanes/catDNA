@@ -2,15 +2,13 @@
 #include "data.h"
 #include <time.h>
 
-//MOVE bestMove;
-
 /* Contador para la regla de los 50 movimientos */
 int fifty;
 
-int side;			/* Side to move, value = BLACK or WHITE */
+int side;         /* side to move, value = BLACK or WHITE */
 int computer_side;
-int max_depth;			/* max depth to search */
-HISTO hist[6000];		/* Game length < 6000 */
+int max_depth;    /* max depth to search */
+HISTO hist[6000]; /* game length < 6000 */
 
 char fenstring[256];
 
@@ -24,7 +22,7 @@ char fenstring[256];
  * 15 = 1111 = 1*2^3 + 1*2^2 + 1*2^1 + 1*2^0
  *
  */
-int castle = 15;		/* At start position all castle types ar available */
+int castle = 15; /* At start position all castle types ar available */
 
 
 /* The next mask is applied like this
@@ -32,8 +30,8 @@ int castle = 15;		/* At start position all castle types ar available */
  * castle &= castle_mask[from] & castle_mask[dest]
  *
  * When from and dest are whatever pieces, then nothing happens, otherwise
- * the values are chosen in such a way that if vg the white king moves
- * to F1 then
+ * the values are chosen in such a way that if for example the white king moves
+ * to f1 then
  *
  * castle = castle & (12 & 15)
  * 1111 & (1100 & 1111) == 1111 & 1100 == 1100
@@ -52,7 +50,7 @@ int castle_mask[64] = {
     13, 15, 15, 15, 12, 15, 15, 14
 };
 
-int hdp;			/* Current move order */
+int hdp; /* current move order */
 //int allmoves = 0;
 
 /* For searching */
@@ -105,33 +103,12 @@ int init_color[64] = {
     WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE
 };
 
-///* Piece in each square */
-//int piece[64] = {
-//        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, KING, EMPTY, PAWN, KING, EMPTY, EMPTY,
-//        PAWN, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, PAWN,
-//        EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
-///* Color of each square */
-//int color[64] = {
-//        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, WHITE, EMPTY, WHITE, BLACK, EMPTY, EMPTY,
-//        BLACK, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, BLACK,
-//        EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-//        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
-
-
-
-
-/* * * * * * * * * * * * *
+/*
+ *
  * Piece Square Tables
- * * * * * * * * * * * * */
+ * 
+ */
+
 /* When evaluating the position we'll add a bonus (or malus) to each piece
  * depending on the very square where it's placed. Vg, a knight in d4 will
  * be given an extra +15, whilst a knight in a1 will be penalized with -40.
@@ -236,6 +213,6 @@ int flip[64] = {
     32, 33, 34, 35, 36, 37, 38, 39,
     24, 25, 26, 27, 28, 29, 30, 31,
     16, 17, 18, 19, 20, 21, 22, 23,
-    8, 9, 10, 11, 12, 13, 14, 15,
-    0, 1, 2, 3, 4, 5, 6, 7
+     8,  9, 10, 11, 12, 13, 14, 15,
+     0,  1,  2,  3,  4,  5,  6,  7
 };
