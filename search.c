@@ -7,11 +7,7 @@
 #include "data.h"
 #include "protos.h"
 
-//#define NDEBUG
-//#include <assert.h>
-
-MOVE
-ComputerThink (int m_depth)
+MOVE ComputerThink (int m_depth)
 {
     /* It returns the move the computer makes */
     MOVE m;

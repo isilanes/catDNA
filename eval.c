@@ -4,9 +4,9 @@
 #include "protos.h"
 
 /*
- ****************************************************************************
- * Evaluation for current position - main "brain" function *
- ****************************************************************************
+ *
+ * --- Evaluation for current position --- *
+ *
  */
 
 /* To count the material */
@@ -24,11 +24,6 @@ int blackQueens = 0;
 /* The evaluation function */
 int Eval (alpha, beta)
 {
-    /* A traditional counter */
-    int i;
-
-    /* Set some values to 0 */
-
     /* The vars for counting the material */
     whitePawns = 0;
     whiteKnights = 0;
@@ -46,6 +41,7 @@ int Eval (alpha, beta)
     /* The score of the position */
     int score = 0;
 
+    int i;
     for (i = 0; i < 64; ++i)
     {
         /* Just counting the wood on the board */
@@ -109,86 +105,16 @@ int Eval (alpha, beta)
             blackRooks * value_piece[ROOK] -
             blackQueens * value_piece[QUEEN];
 
-    /* Trying the lazy eval */
-    int lazy = score;
-    if (side == BLACK) lazy = -lazy;
-    if ( ( lazy + 500 < alpha ) ||
-         ( lazy - 500 > beta  ) )
-    {
-        return lazy;
-    }
-
-    /* Check all the squares searching for the pieces */
-    for (i = 0; i < 64; i++)
-    {
-        if (color[i] == EMPTY)
-            continue;
-        if (color[i] == WHITE)
-        {
-            /* Now we add to the evaluation the value of the
-             * piece square tables */
-            switch (piece[i])
-            {
-            case PAWN:
-                //score += pst_pawn_endgame[i];
-                score += pst_pawn_midgame[i];
-                break;
-            case KNIGHT:
-                score += pst_knight[i];
-                break;
-            case BISHOP:
-                score += pst_bishop[i];
-                break;
-            case ROOK:
-                score += pst_rook[i];
-                break;
-            case QUEEN:
-                score += pst_queen[i];
-                break;
-            case KING:
-                //score += pst_king_endgame[i];
-                score += pst_king_midgame[i];
-                break;
-            }
-        }
-
-        /* Now the evaluation for black: note the change of
-           the sign in the score */
-        else
-        {
-            switch (piece[i])
-            {
-            case PAWN:
-                //score -= pst_pawn_endgame[flip[i]];
-                score -= pst_pawn_midgame[flip[i]];
-                break;
-            case KNIGHT:
-                score -= pst_knight[flip[i]];
-                break;
-            case BISHOP:
-                score -= pst_bishop[flip[i]];
-                break;
-            case ROOK:
-                score -= pst_rook[flip[i]];
-                break;
-            case QUEEN:
-                score -= pst_queen[flip[i]];
-                break;
-            case KING:
-                //score -= pst_king_endgame[flip[i]];
-                score -= pst_king_midgame[flip[i]];
-                break;
-            }
-        }
-    }
-
-    /* Finally we return the score, taking into account the side to move
-        We add an extra plus because in the same position the side to
-        move has some extra advantage*/
+    /* Finally we return the score, taking into account the side to move */
 
     if (side == WHITE)
-        return (score );
-    return -score;
+    {
+        return score;
+    }
+    else
+    {
+        return -score;
+    }
 }
 
 /* Returns 1 if no enough material on the board */

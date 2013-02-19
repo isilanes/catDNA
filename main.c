@@ -26,291 +26,6 @@ void startgame ()
     hash_key_position(); /* hash de la posicion inicial */
 }
 
-void test1()
-{
-    /* Piece in each square */
-    int piece_test[64] = {
-            EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, KING, EMPTY, PAWN, KING, EMPTY, EMPTY,
-            PAWN, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, PAWN,
-            EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
-    /* Color of each square */
-    int color_test[64] = {
-            EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, WHITE, EMPTY, WHITE, BLACK, EMPTY, EMPTY,
-            BLACK, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, BLACK,
-            EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = WHITE;
-    computer_side = BLACK;	/* Human is white side */
-    hdp = 0;
-    castle = 15;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
-void test2()
-{
-    /* Piece in each square */
-    int piece_test[64] = {
-            EMPTY, ROOK, BISHOP, EMPTY, EMPTY, ROOK, EMPTY, KING,
-            EMPTY, EMPTY, QUEEN, EMPTY, BISHOP, PAWN, PAWN, PAWN,
-            PAWN, EMPTY, PAWN, PAWN, PAWN, KNIGHT, EMPTY, EMPTY,
-            PAWN, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY, EMPTY,
-            EMPTY, PAWN, KNIGHT, QUEEN, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, PAWN, EMPTY, BISHOP, PAWN, PAWN, PAWN,
-            ROOK, EMPTY, BISHOP, EMPTY, EMPTY, EMPTY, ROOK, KING };
-    /* Color of each square */
-    int color_test[64] = {
-            EMPTY, BLACK, BLACK, EMPTY, EMPTY, BLACK, EMPTY, BLACK,
-            EMPTY, EMPTY, BLACK, EMPTY, BLACK, BLACK, BLACK, BLACK,
-            BLACK, EMPTY, BLACK, BLACK, BLACK, BLACK, EMPTY, EMPTY,
-            WHITE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY,
-            EMPTY, WHITE, WHITE, WHITE, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, WHITE, EMPTY, WHITE, WHITE, WHITE, WHITE,
-            WHITE, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, WHITE, WHITE};
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = BLACK;
-    computer_side = WHITE;	/* Human is white side */
-    hdp = 0;
-    castle = 0;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
-void test3()
-{
-    puts ("FEN: r4rk1/pp1b1pp1/2n1p1nB/3pP1Q1/2pP4/2q4N/P1P1BPPP/R4RK1 b - - 0 1");
-    /* Piece in each square */
-    int piece_test[64] = {
-            ROOK, EMPTY, EMPTY, EMPTY, EMPTY, ROOK, KING, EMPTY,
-            PAWN, PAWN, EMPTY, BISHOP, EMPTY, PAWN, PAWN, EMPTY,
-            EMPTY, EMPTY, KNIGHT, EMPTY, PAWN, EMPTY, KNIGHT, BISHOP,
-            EMPTY, EMPTY, EMPTY, PAWN, PAWN, EMPTY, QUEEN, EMPTY,
-            EMPTY, EMPTY, PAWN, PAWN, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, QUEEN, EMPTY, EMPTY, EMPTY, EMPTY, KNIGHT,
-            PAWN, EMPTY, PAWN, EMPTY, BISHOP, PAWN, PAWN, PAWN,
-            ROOK, EMPTY, EMPTY, EMPTY, EMPTY, ROOK, KING, EMPTY};
-    /* Color of each square */
-    int color_test[64] = {
-            BLACK, EMPTY, EMPTY, EMPTY, EMPTY, BLACK, BLACK, EMPTY,
-            BLACK, BLACK, EMPTY, BLACK, EMPTY, BLACK, BLACK, EMPTY,
-            EMPTY, EMPTY, BLACK, EMPTY, BLACK, EMPTY, BLACK, WHITE,
-            EMPTY, EMPTY, EMPTY, BLACK, WHITE, EMPTY, WHITE, EMPTY,
-            EMPTY, EMPTY, BLACK, WHITE, EMPTY, EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, WHITE,
-            WHITE, EMPTY, WHITE, EMPTY, WHITE, WHITE, WHITE, WHITE,
-            WHITE, EMPTY, EMPTY, EMPTY, EMPTY, WHITE, WHITE, EMPTY};
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = BLACK;
-    computer_side = WHITE;	/* Human is white side */
-    hdp = 0;
-    castle = 0;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
-void test4()
-{
-    /* Piece in each square */
-    int piece_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, KING, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, ROOK, ROOK,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, KING};
-    /* Color of each square */
-    int color_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE, WHITE,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE};
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = WHITE;
-    computer_side = BLACK;	/* Human is white side */
-    hdp = 0;
-    castle = 0;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
-void test5()
-{
-    /* Piece in each square */
-    int piece_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, ROOK, EMPTY, KING,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, PAWN, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BISHOP, ROOK, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, ROOK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        ROOK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, KING};
-    /* Color of each square */
-    int color_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLACK, EMPTY, BLACK,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLACK, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE, WHITE, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE};
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = WHITE;
-    computer_side = BLACK;	/* Human is white side */
-    hdp = 0;
-    castle = 0;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
-void test6()
-{
-    puts ("Just an easy position to check either it'll make");
-    puts ("a bad capture in order to give mate.");
-    /* Piece in each square */
-    int piece_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BISHOP, BISHOP,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, PAWN, PAWN, KING,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, PAWN, PAWN,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, QUEEN, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, BISHOP, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, BISHOP, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, KING};
-    /* Color of each square */
-    int color_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLACK, BLACK,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLACK, BLACK, BLACK,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLACK, BLACK,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE};
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = WHITE;
-    computer_side = BLACK;	/* Human is white side */
-    hdp = 0;
-    castle = 0;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
-void test7()
-{
-    puts ("A position where Kitt crashed");
-    puts ("8/1b6/4p1k1/2p5/7P/4p1PK/2p2q2/6R1 b - - 1 77");
-    /* Piece in each square */
-    int piece_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, BISHOP, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, PAWN, EMPTY, KING, EMPTY,
-        EMPTY, PAWN, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, PAWN, EMPTY, BISHOP, EMPTY, PAWN,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, PAWN, KING,
-        EMPTY, PAWN, EMPTY, EMPTY, EMPTY, QUEEN, EMPTY, EMPTY,
-        EMPTY, ROOK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY};
-    /* Color of each square */
-    int color_test[64] = {
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, EMPTY, BLACK, EMPTY, BLACK, EMPTY,
-        EMPTY, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
-        EMPTY, EMPTY, EMPTY, BLACK, EMPTY, WHITE, EMPTY, WHITE,
-        EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, WHITE, WHITE,
-        EMPTY, BLACK, EMPTY, EMPTY, EMPTY, BLACK, EMPTY, EMPTY,
-        EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY};
-
-    int i;
-    for (i = 0; i < 64; ++i)
-    {
-        piece[i] = piece_test[i];
-        color[i] = color_test[i];
-    }
-
-    setDistToKing();
-
-    side = WHITE;
-    computer_side = BLACK;	/* Human is white side */
-    hdp = 0;
-    castle = 0;
-    fifty = 0;
-    hash_key_position(); /* hash de la posicion inicial */
-}
-
 void xboard ()
 {
     char line[256], command[256], c;
@@ -321,15 +36,12 @@ void xboard ()
     //int illegal_king = 0;
 
     printf ("\n");
-//    hash_key_position(); /* hash de la posicion inicial */
-//    hash_rnd_init();
     startgame ();
 
     /* Waiting a command from the GUI */
     for (;;)
     {
         fflush (stdout);
-//        setbuf(stdout, NULL);
         if (side == computer_side)
         {   /* computer's turn */
             /* Find out the best move to react the current position */
@@ -389,7 +101,7 @@ void xboard ()
             computer_side = EMPTY;
             continue;
         }
-        /*si recibimos un resultado de un juego el motor debe parar*/
+        /* Si recibimos un resultado de un juego el motor debe parar */
         if (!strcmp(command, "result"))
         {
             computer_side = EMPTY;
@@ -602,54 +314,12 @@ int main ()
         }
 
         /* Get user input */
-        printf ("k> ");
+        printf ("c> ");
         if (scanf ("%s", s) == EOF)	/* close program */
             return 0;
         if (!strcmp (s, "d"))
         {
             PrintBoard ();
-            continue;
-        }
-        if (!strcmp (s, "test1"))
-        {
-            test1 ();
-            PrintBoard();
-            continue;
-        }
-        if (!strcmp (s, "test2"))
-        {
-            test2 ();
-            PrintBoard();
-            continue;
-        }
-        if (!strcmp (s, "test3"))
-        {
-            test3 ();
-            PrintBoard();
-            continue;
-        }
-        if (!strcmp (s, "test4"))
-        {
-            test4 ();
-            PrintBoard();
-            continue;
-        }
-        if (!strcmp (s, "test5"))
-        {
-            test5 ();
-            PrintBoard();
-            continue;
-        }
-        if (!strcmp (s, "test6"))
-        {
-            test6 ();
-            PrintBoard();
-            continue;
-        }
-        if (!strcmp (s, "test7"))
-        {
-            test7 ();
-            PrintBoard();
             continue;
         }
         if (!strcmp (s, "undo"))
@@ -804,17 +474,11 @@ void PrintResult(int count, MOVE *ListMoves)
             computer_side = EMPTY;   /* modo force */
         }
     else if (reps() == 3)
-        {
-            /* Triple repeticion */
-            printf("1/2-1/2 {Draw by repetition}\n");
-            computer_side = EMPTY;   /* modo force */
-        }
-    else if (NoMaterial())
-        {
-            /* Insuficiencia de Material */
-            printf("1/2-1/2 {Insufficient material}\n");
-            computer_side = EMPTY;   /* modo force */
-        }
+    {
+        /* Triple repeticion */
+        printf("1/2-1/2 {Draw by repetition}\n");
+        computer_side = EMPTY;   /* modo force */
+    }
 }
 
 /*************************************************************************************
