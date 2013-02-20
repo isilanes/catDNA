@@ -8,7 +8,7 @@ fn = 'run.pgn'
 class State:
 
     def __init__(self):
-        # state[i,j] gives us the state of cell in i-th row (from
+        # state[i,j] gives us the state of square in i-th row (from
         # bottom to top), and j-th column, left to right.
         #
         # States are:
@@ -40,7 +40,9 @@ class State:
         for i in range(8):
             string = ''
             for j in range(8):
-                string += '{0:3d}'.format(self.state[7-i][j])
+                id = self.state[7-i][j]
+                sy = id2symbol[id]
+                string += '{0:3}'.format(sy)
             print(string)
 
     # --- #
@@ -49,45 +51,136 @@ class State:
         # mov = movement (e.g. d4)
         # white = True (white, default) or False (black)
 
-        # Make sense of movement mov:
+        # Take out check indication, if present:
+        if mov[-1] == '+':
+            mov = mov[:-1]
+
+        # Castlings:
+        if mov == 'O-O': # short castling
+            if white:
+                self.state[0][7] = 0
+                self.state[0][6] = 6
+                self.state[0][5] = 4
+                self.state[0][4] = 0
+            else:
+                self.state[7][7] = 0
+                self.state[7][6] = -6
+                self.state[7][5] = -4
+                self.state[7][4] = 0
+            return
+        elif mov == 'O-O-O': # long castling
+            if white:
+                self.state[0][0] = 0
+                self.state[0][2] = 6
+                self.state[0][3] = 4
+                self.state[0][4] = 0
+            else:
+                self.state[7][0] = 0
+                self.state[7][2] = -6
+                self.state[7][3] = -4
+                self.state[7][4] = 0
+            return
+
+        # Destination square:
         to_i = int(mov[-1]) - 1
         to_j = letter2j[mov[-2]]
 
-        moved = 1 # which piece type was moved
-        if mov[0] == 'N':
-            moved = 3
+        # Which piece type was moved?:
+        piece = 1
+        if mov[0] == 'B':
+            piece = 2
+        elif mov[0] == 'N':
+            piece = 3
+        elif mov[0] == 'R':
+            piece = 4
+        elif mov[0] == 'Q':
+            piece = 5
+        elif mov[0] == 'K':
+            piece = 6
 
         if not white:
-            moved = -moved
+            piece = -piece
 
-        # Identify origin cell:
+        # Extra info?:
+        if abs(piece) == 1:
+            xtra = mov[:-2]
+        else:
+            xtra = mov[1:-2]
+
+        capture = False
+        from_j = None
+        if xtra:
+            # Capture?
+            if xtra[-1] == 'x':
+                if xtra == 'x': # then piece other than pawn and no file/rank specification needed
+                    capture = True
+                else: # then pawn, or otherwise file/rank specification needed
+                    capture = True
+                    from_j = letter2j[xtra[0]]
+            else:
+                from_j = letter2j[xtra[0]]
+
+        # Identify origin square:
         origin = None
         for i in range(8):
             for j in range(8):
-                if self.state[i][j] == moved:
+                if self.state[i][j] == piece:
                     # White PAWN:
-                    if moved == 1:
-                        if j == to_j:
+                    if piece == 1:
+                        if capture and j == from_j:
+                            if i == to_i - 1 or i == to_i - 2:
+                                origin = [i, j]
+                        elif j == to_j:
                             if i == to_i - 1 or i == to_i - 2:
                                 origin = [i, j]
                     # Black PAWN:
-                    elif moved == -1:
-                        if j == to_j:
+                    elif piece == -1:
+                        if capture:
+                            if j == from_j:
+                                if i == to_i + 1 or i == to_i + 2:
+                                    origin = [i, j]
+                        elif j == to_j:
                             if i == to_i + 1 or i == to_i + 2:
                                 origin = [i, j]
+                    # BISHOPs:
+                    elif abs(piece) == 2:
+                        di = abs(to_i - i)
+                        dj = abs(to_j - j)
+                        if di == dj:
+                            origin = [i, j]
+
                     # KNIGHTs:
-                    if moved == 3:
-                        pass
+                    elif abs(piece) == 3:
+                        di = abs(to_i - i)
+                        dj = abs(to_j - j)
+                        if di == 1 and dj == 2 or di == 2 and dj == 1:
+                            origin = [i, j]
+
+                    # ROOKs:
+                    elif abs(piece) == 4:
+                        if from_j < 8 and j == from_j:
+                            origin = [i, j]
+                        else:
+                            if j == to_j or i == to_i:
+                                origin = [i, j]
+
+                    # QUEENs:
+                    elif abs(piece) == 5:
+                        origin = [i, j]
+
+                    # KINGs:
+                    elif abs(piece) == 6:
+                        origin = [i, j]
 
         if not origin:
-            print("error")
+            print("Error with movement {0}".format(mov))
             sys.exit()
 
         # Delete from origin:
         self.state[origin[0]][origin[1]] = 0
 
         # Place into destiny:
-        self.state[to_i][to_j] = moved
+        self.state[to_i][to_j] = piece
 
 #------------------------------------------------------------------------#
 
@@ -100,6 +193,22 @@ letter2j = {
         'f' : 5,
         'g' : 6,
         'h' : 7,
+        }
+
+id2symbol = {
+        -6 : 'k',
+        -5 : 'q',
+        -4 : 'r',
+        -3 : 'n',
+        -2 : 'b',
+        -1 : 'p',
+         0 : '.',
+         1 : 'P',
+         2 : 'B',
+         3 : 'N',
+         4 : 'R',
+         5 : 'Q',
+         6 : 'K',
         }
 
 #------------------------------------------------------------------------#
@@ -129,7 +238,6 @@ with open(fn, 'r') as f:
             for move in moves:
                 mab = move.split()
                 if mab:
-                    pos.show()
                     ma, mb = mab
 
                     print('----')
