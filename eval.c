@@ -24,7 +24,12 @@ int blackQueens = 0;
 /* The evaluation function */
 int Eval (alpha, beta)
 {
-    return 0;
+    /* How many evaluations in total */
+    count_evaluations++;
+
+    /* The score of the position */
+    int score = 0;
+
     /* The vars for counting the material */
     whitePawns = 0;
     whiteKnights = 0;
@@ -36,11 +41,6 @@ int Eval (alpha, beta)
     blackBishops = 0;
     blackRooks = 0;
     blackQueens = 0;
-
-    count_evaluations++;
-
-    /* The score of the position */
-    int score = 0;
 
     int i;
     for (i = 0; i < 64; ++i)
@@ -105,6 +105,16 @@ int Eval (alpha, beta)
             blackBishops * value_piece[BISHOP] -
             blackRooks * value_piece[ROOK] -
             blackQueens * value_piece[QUEEN];
+
+    /* 0-level correlation: each piece/color/square has a score */
+    for (i = 0; i < 64; ++i)
+    {
+    };
+
+    /*
+     * 1-level correlation: each piece/color/square(i)|piece/color/square(j) has a score, 
+     * where for each i there is a single corresponding j.
+     */
 
     /* Finally we return the score, taking into account the side to move */
 

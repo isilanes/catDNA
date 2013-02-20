@@ -113,6 +113,7 @@ int init_color[64] = {
  * depending on the very square where it's placed. Vg, a knight in d4 will
  * be given an extra +15, whilst a knight in a1 will be penalized with -40.
  * This simple idea allows the engine to make more sensible moves */
+
 int pst_pawn_midgame[64] = {
       0,  0,  0,  0,  0,  0,  0,  0,
       8, 12, 15, 18, 18, 15, 12,  8,
