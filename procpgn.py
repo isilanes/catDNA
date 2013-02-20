@@ -1,4 +1,5 @@
 import re
+import sys
 
 fn = 'run.pgn'
 
@@ -44,26 +45,43 @@ class State:
 
     # --- #
 
-    def mv(self, ma, mb):
-        # Make sense of movement ma (whites):
-        to_i = int(ma[-1]) - 1
-        to_j = letter2j[ma[-2]]
+    def mv(self, mov, white=True):
+        # mov = movement (e.g. d4)
+        # white = True (white, default) or False (black)
+
+        # Make sense of movement mov:
+        to_i = int(mov[-1]) - 1
+        to_j = letter2j[mov[-2]]
+
         moved = 1 # which piece type was moved
-        if ma[0] == 'N':
+        if mov[0] == 'N':
             moved = 3
+
+        if not white:
+            moved = -moved
 
         # Identify origin cell:
         origin = None
         for i in range(8):
             for j in range(8):
                 if self.state[i][j] == moved:
-                    if moved == 1: # can a pawn land there?
+                    # White PAWN:
+                    if moved == 1:
                         if j == to_j:
                             if i == to_i - 1 or i == to_i - 2:
                                 origin = [i, j]
+                    # Black PAWN:
+                    elif moved == -1:
+                        if j == to_j:
+                            if i == to_i + 1 or i == to_i + 2:
+                                origin = [i, j]
+                    # KNIGHTs:
+                    if moved == 3:
+                        pass
 
         if not origin:
             print("error")
+            sys.exit()
 
         # Delete from origin:
         self.state[origin[0]][origin[1]] = 0
@@ -113,12 +131,13 @@ with open(fn, 'r') as f:
                 if mab:
                     pos.show()
                     ma, mb = mab
+
                     print('----')
                     print(ma, mb)
-                    pos.mv(ma, mb)
+                    pos.mv(ma)
+                    pos.mv(mb, False)
                     pos.show()
-                    exit()
-            exit()
+
             string = ''
             read = False
             won = False
