@@ -54,6 +54,13 @@ class State:
         # Take out check indication, if present:
         if mov[-1] == '+':
             mov = mov[:-1]
+        
+        # Promotion?:
+        promotion = False
+        if mov[-2] == '=':
+            promotion = True
+            promote_to = symbol2id[mov[-1]]
+            mov = mov[:-2]
 
         # Castlings:
         if mov == 'O-O': # short castling
@@ -108,10 +115,9 @@ class State:
             xtra = mov[1:-2]
 
         capture = False
-        from_j = None
+        from_j = 8
         if xtra:
-            # Capture?
-            if xtra[-1] == 'x':
+            if xtra[-1] == 'x': # capture
                 if xtra == 'x': # then piece other than pawn and no file/rank specification needed
                     capture = True
                 else: # then pawn, or otherwise file/rank specification needed
@@ -127,50 +133,98 @@ class State:
                 if self.state[i][j] == piece:
                     # White PAWN:
                     if piece == 1:
-                        if capture and j == from_j:
-                            if i == to_i - 1 or i == to_i - 2:
-                                origin = [i, j]
+                        if capture:
+                            if j == from_j:
+                                if i == to_i - 1 or i == to_i - 2:
+                                    origin = [i, j]
+                                    break
                         elif j == to_j:
-                            if i == to_i - 1 or i == to_i - 2:
+                            if i == to_i - 1:
                                 origin = [i, j]
+                                break
+                            if i == to_i - 2 and not self.state[i+1][j]:
+                                origin = [i, j]
+                                break
+
                     # Black PAWN:
                     elif piece == -1:
                         if capture:
                             if j == from_j:
                                 if i == to_i + 1 or i == to_i + 2:
                                     origin = [i, j]
+                                    break
                         elif j == to_j:
-                            if i == to_i + 1 or i == to_i + 2:
+                            if i == to_i + 1:
                                 origin = [i, j]
+                                break
+                            if i == to_i + 2 and not self.state[i-1][j]:
+                                origin = [i, j]
+                                break
+
                     # BISHOPs:
                     elif abs(piece) == 2:
                         di = abs(to_i - i)
                         dj = abs(to_j - j)
                         if di == dj:
                             origin = [i, j]
+                            break
 
                     # KNIGHTs:
                     elif abs(piece) == 3:
                         di = abs(to_i - i)
                         dj = abs(to_j - j)
-                        if di == 1 and dj == 2 or di == 2 and dj == 1:
-                            origin = [i, j]
+                        if from_j < 8:
+                            if j == from_j:
+                                origin = [i, j]
+                                break
+                        else:
+                            if di == 1 and dj == 2 or di == 2 and dj == 1:
+                                origin = [i, j]
+                                break
 
                     # ROOKs:
                     elif abs(piece) == 4:
-                        if from_j < 8 and j == from_j:
-                            origin = [i, j]
-                        else:
-                            if j == to_j or i == to_i:
+                        if from_j < 8:
+                            if j == from_j:
                                 origin = [i, j]
+                                break
+                        else:
+                            if j == to_j:
+                                # Any intervening piece?:
+                                first = min(i,to_i) + 1
+                                last  = max(i,to_i)
+                                no_piece = True
+                                for ii in range(first, last):
+                                    if self.state[ii][j]:
+                                        no_piece = False
+                                        break
+
+                                if no_piece:
+                                    origin = [i, j]
+
+                            elif i == to_i:
+                                # Any intervening piece?:
+                                first = min(j,to_j) + 1
+                                last  = max(j,to_j)
+                                no_piece = True
+                                for jj in range(first, last):
+                                    if self.state[i][jj]:
+                                        no_piece = False
+                                        break
+
+                                if no_piece:
+                                    origin = [i, j]
+                                    break
 
                     # QUEENs:
                     elif abs(piece) == 5:
                         origin = [i, j]
+                        break
 
                     # KINGs:
                     elif abs(piece) == 6:
                         origin = [i, j]
+                        break
 
         if not origin:
             print("Error with movement {0}".format(mov))
@@ -181,6 +235,13 @@ class State:
 
         # Place into destiny:
         self.state[to_i][to_j] = piece
+
+        # Pawn promotion:
+        if promotion:
+            if white:
+                self.state[to_i][to_j] = promote_to
+            else:
+                self.state[to_i][to_j] = -promote_to
 
 #------------------------------------------------------------------------#
 
@@ -211,6 +272,22 @@ id2symbol = {
          6 : 'K',
         }
 
+symbol2id = {
+        'k' : -6,
+        'q' : -5,
+        'r' : -4,
+        'n' : -3,
+        'b' : -2,
+        'p' : -1,
+        '.' :  0,
+        'P' :  1,
+        'B' :  2,
+        'N' :  3,
+        'R' :  4,
+        'Q' :  5,
+        'K' :  6,
+        }
+
 #------------------------------------------------------------------------#
 
 won = False
@@ -239,12 +316,16 @@ with open(fn, 'r') as f:
                 mab = move.split()
                 if mab:
                     ma, mb = mab
-
-                    print('----')
-                    print(ma, mb)
-                    pos.mv(ma)
-                    pos.mv(mb, False)
-                    pos.show()
+                    if ma[-1] == '#': # checkmate
+                        print('-- Fin --')
+                        print(ma, mb)
+                        pos.show()
+                    else:
+                        print('----')
+                        print(ma, mb)
+                        pos.mv(ma)
+                        pos.mv(mb, False)
+                        pos.show()
 
             string = ''
             read = False
