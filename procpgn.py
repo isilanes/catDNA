@@ -115,6 +115,7 @@ class State:
             xtra = mov[1:-2]
 
         capture = False
+        from_i = 8
         from_j = 8
         if xtra:
             if xtra[-1] == 'x': # capture
@@ -122,9 +123,15 @@ class State:
                     capture = True
                 else: # then pawn, or otherwise file/rank specification needed
                     capture = True
+                    if xtra[0] in letter2j:
+                        from_j = letter2j[xtra[0]]
+                    elif xtra[0] in [ str(x) for x in range(8) ]:
+                        from_i = int(xtra[0]) - 1
+            else: # then xtra is either col specification, or rank specification
+                if xtra[0] in letter2j:
                     from_j = letter2j[xtra[0]]
-            else:
-                from_j = letter2j[xtra[0]]
+                elif xtra[0] in [ str(x) for x in range(8)]:
+                    from_i = int(xtra[0]) - 1
 
         # Identify origin square:
         origin = None
@@ -186,6 +193,10 @@ class State:
                     elif abs(piece) == 4:
                         if from_j < 8:
                             if j == from_j:
+                                origin = [i, j]
+                                break
+                        elif from_i < 8:
+                            if i == from_i:
                                 origin = [i, j]
                                 break
                         else:
@@ -290,6 +301,7 @@ symbol2id = {
 
 #------------------------------------------------------------------------#
 
+imatch = 0 # index of match
 won = False
 read = False
 string = ''
@@ -297,6 +309,9 @@ string = ''
 with open(fn, 'r') as f:
     for line in f:
         line = line.strip()
+        if '[Event ' in line: # count matches
+            imatch += 1
+
         if 'Result' in line and '1-0' in line:
             won = True
 
@@ -308,6 +323,7 @@ with open(fn, 'r') as f:
             string += line
 
         if read and '1-0' in line:
+            imove = 0
             string = re.sub('{[^}]*}','',string)
             string = re.sub('[^ ]*\.','|',string)
             print(string)
@@ -315,13 +331,16 @@ with open(fn, 'r') as f:
             for move in moves:
                 mab = move.split()
                 if mab:
+                    imove += 1 # count moves
+                    if mab[-1] == '1-0':
+                        mab = mab[:2]
                     ma, mb = mab
                     if ma[-1] == '#': # checkmate
                         print('-- Fin --')
                         print(ma, mb)
                         pos.show()
                     else:
-                        print('----')
+                        print('---- {0}/{1} --'.format(imatch, imove))
                         print(ma, mb)
                         pos.mv(ma)
                         pos.mv(mb, False)
