@@ -109,6 +109,7 @@ int Eval (alpha, beta)
     /* 0-level correlation: each piece/color/square has a score */
     for (i = 0; i < 64; ++i)
     {
+        int s = corr1[0][0][0];
     };
 
     /*

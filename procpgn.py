@@ -74,9 +74,9 @@ class State:
 
         # Which piece type was moved?:
         piece = 1
-        if mov[0] == 'B':
+        if mov[0] == 'N':
             piece = 2
-        elif mov[0] == 'N':
+        elif mov[0] == 'B':
             piece = 3
         elif mov[0] == 'R':
             piece = 4
@@ -154,16 +154,8 @@ class State:
                                 origin = [i, j]
                                 break
 
-                    # BISHOPs:
-                    elif abs(piece) == 2:
-                        di = abs(to_i - i)
-                        dj = abs(to_j - j)
-                        if di == dj:
-                            origin = [i, j]
-                            break
-
                     # KNIGHTs:
-                    elif abs(piece) == 3:
+                    elif abs(piece) == 2:
                         di = abs(to_i - i)
                         dj = abs(to_j - j)
                         if from_j < 8:
@@ -174,6 +166,14 @@ class State:
                             if di == 1 and dj == 2 or di == 2 and dj == 1:
                                 origin = [i, j]
                                 break
+
+                    # BISHOPs:
+                    elif abs(piece) == 3:
+                        di = abs(to_i - i)
+                        dj = abs(to_j - j)
+                        if di == dj:
+                            origin = [i, j]
+                            break
 
                     # ROOKs:
                     elif abs(piece) == 4:
@@ -270,12 +270,12 @@ class State:
         #  5 = white queen
         #  6 = white king
         self.state = []
-        self.state.append([4, 3, 2, 5, 6, 2, 3, 4])
+        self.state.append([4, 2, 3, 5, 6, 3, 2, 4])
         self.state.append([1, 1, 1, 1, 1, 1, 1, 1])
         for i in range(4):
             self.state.append([0, 0, 0, 0, 0, 0, 0, 0])
         self.state.append([-1, -1, -1, -1, -1, -1, -1, -1])
-        self.state.append([-4, -3, -2, -5, -6, -2, -3, -4])
+        self.state.append([-4, -2, -3, -5, -6, -3, -2, -4])
 
 #------------------------------------------------------------------------#
 
@@ -294,13 +294,13 @@ id2symbol = {
         -6 : 'k',
         -5 : 'q',
         -4 : 'r',
-        -3 : 'n',
         -2 : 'b',
+        -2 : 'n',
         -1 : 'p',
          0 : '.',
          1 : 'P',
-         2 : 'B',
-         3 : 'N',
+         2 : 'N',
+         3 : 'B',
          4 : 'R',
          5 : 'Q',
          6 : 'K',
@@ -310,13 +310,13 @@ symbol2id = {
         'k' : -6,
         'q' : -5,
         'r' : -4,
-        'n' : -3,
-        'b' : -2,
+        'b' : -3,
+        'n' : -2,
         'p' : -1,
         '.' :  0,
         'P' :  1,
-        'B' :  2,
-        'N' :  3,
+        'N' :  2,
+        'B' :  3,
         'R' :  4,
         'Q' :  5,
         'K' :  6,
