@@ -206,8 +206,7 @@ int BadCapture(MOVE mcmov) {
  * Move generator *
  ****************************************************************************
  */
-void
-Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
+void Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
 {
     MOVE move;
     move.from = from;
@@ -324,8 +323,7 @@ Gen_Push (int from, int dest, int type, MOVE * pBuf, int *pMCount)
     *pMCount = *pMCount + 1;
 }
 
-void
-Gen_PushNormal (int from, int dest, MOVE * pBuf, int *pMCount)
+void Gen_PushNormal (int from, int dest, MOVE * pBuf, int *pMCount)
 {
     Gen_Push (from, dest, MOVE_TYPE_NORMAL, pBuf, pMCount);
 }
@@ -333,8 +331,7 @@ Gen_PushNormal (int from, int dest, MOVE * pBuf, int *pMCount)
 /* Especial cases for Pawn */
 
 /* Pawn can promote */
-void
-Gen_PushPawn (int from, int dest, MOVE * pBuf, int *pMCount)
+void Gen_PushPawn (int from, int dest, MOVE * pBuf, int *pMCount)
 {
     if (piece[dest] == EPS_SQ)
     {
@@ -356,15 +353,13 @@ Gen_PushPawn (int from, int dest, MOVE * pBuf, int *pMCount)
 }
 
 /* When a pawn moves two squares then appears the possibility of the en passant capture*/
-void
-Gen_PushPawnTwo (int from, int dest, MOVE * pBuf, int *pMCount)
+void Gen_PushPawnTwo (int from, int dest, MOVE * pBuf, int *pMCount)
 {
     Gen_Push (from, dest, MOVE_TYPE_PAWN_TWO, pBuf, pMCount);
 }
 
 /* Especial cases for King */
-void
-Gen_PushKing (int from, int dest, MOVE * pBuf, int *pMCount)
+void Gen_PushKing (int from, int dest, MOVE * pBuf, int *pMCount)
 {
     /* Is it a castle? */
     if (from == E1 && (dest == G1 || dest == C1))	/* this is a white castle */
@@ -382,16 +377,14 @@ Gen_PushKing (int from, int dest, MOVE * pBuf, int *pMCount)
 }
 
 /* Gen all moves of current_side to move and push them to pBuf, and return number of moves */
-int
-GenMoves (int current_side, MOVE * pBuf)
+int GenMoves (int current_side, MOVE * pBuf)
 {
     int i;			/* Counter for the board squares */
     int k;			/* Counter for cols */
     int y;
     int row;
     int col;
-    int movecount;
-    movecount = 0;
+    int movecount = 0;
 
     for (i = 0; i < 64; i++)	/* Scan all board */
         if (color[i] == current_side)
@@ -641,18 +634,15 @@ GenMoves (int current_side, MOVE * pBuf)
 
 /* Gen all captures of current_side to move and push them to pBuf, return number of moves
  * It's necesary at least ir order to use quiescent in the search */
-int
-GenCaps (int current_side, MOVE * pBuf)
+int GenCaps (int current_side, MOVE * pBuf)
 {
     int i;			/* Counter for the board squares */
     int k;			/* Counter for cols */
     int y;
     int row;
     int col;
-    int capscount;		/* Counter for the posible captures */
-    int xside;
-    xside = Opponent(current_side);
-    capscount = 0;
+    int capscount = 0; /* Counter for the posible captures */
+    int xside = Opponent(current_side);
 
     for (i = 0; i < 64; i++)	/* Scan all board */
         if (color[i] == current_side)
@@ -835,9 +825,8 @@ GenCaps (int current_side, MOVE * pBuf)
                 if (col < 7 && i < 56 && color[i + 9] == xside)
                     Gen_PushKing (i, i + 9, pBuf, &capscount);	/* right down */
                 break;
-//                               default:
-//                               printf("Piece type unknown");
-                // assert(false);
+                default:
+                printf("Piece type unknown");
             }
         }
     return capscount;
@@ -846,15 +835,18 @@ GenCaps (int current_side, MOVE * pBuf)
 
 /* Check if current side is in check. Necesary in order to check legality of moves
  and check if castle is allowed */
-int
-IsInCheck (int current_side)
+int IsInCheck (int current_side)
 {
-    int k;			/* The square where the king is placed */
+    int i = 0;
+    int k = 0; /* The square where the king is placed */
 
     /* Find the King of the side to move */
-    for (k = 0; k < 64; k++)
-        if ((piece[k] == KING) && color[k] == current_side)
+    for (i = 0; i < 64; i++)
+        if ((piece[i] == KING) && color[i] == current_side)
+        {
+            k = i;
             break;
+        }
 
     /* Use IsAttacked in order to know if current_side is under check */
     return IsAttacked (current_side, k);
@@ -862,15 +854,13 @@ IsInCheck (int current_side)
 
 /* Check and return 1 if square k is attacked by current_side, 0 otherwise. Necesary, vg, to check
  * castle rules (if king goes from e1 to g1, f1 can't be attacked by an enemy piece) */
-int
-IsAttacked (int current_side, int k)
+int IsAttacked (int current_side, int k)
 {
-    int h;
-    int y;
-    int row;			/* Row where the square is placed */
-    int col;			/* Col where the square is placed */
-    int xside;
-    xside = Opponent(current_side);	/* opposite current_side, who may be attacking */
+    int h = 0;
+    int y = 0;
+    int row = 0; /* Row where the square is placed */
+    int col = 0; /* Col where the square is placed */
+    int xside = Opponent(current_side); /* opposite current_side, who may be attacking */
 
     /* Situation of the square */
     row = Row (k);
@@ -1051,16 +1041,13 @@ IsAttacked (int current_side, int k)
     return 0;
 }
 
-int
-MakeMove (MOVE m)
+int MakeMove (MOVE m)
 {
-    int r;
+    int r = 0;
 
     count_MakeMove++;
 
     int typeOfMove = m.type_of_move;
-//    if (typeOfMove > 8)
-//        printf ("type of move %d \n", typeOfMove);
 
     hist[hdp].m = m;
     hist[hdp].cap = piece[m.dest];	/* store in history the piece of the dest square */

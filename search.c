@@ -250,11 +250,11 @@ int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
 
 int Quiescent (int alpha, int beta)
 {
-    int i;
+    int i = 0;
     int legal = 0;
     int movescnt = 0;
-    int score;
-    int best;
+    int score = 0;
+    int best = 0;
 
     MOVE qMovesBuf[200];
 
@@ -333,6 +333,9 @@ int Quiescent (int alpha, int beta)
         score = -Quiescent (-beta, -alpha);
         TakeBack ();
 
+        if ((nodes & 1023) == 0)
+            checkup(stop_time);
+
         if (must_stop)
             return 0;
 
@@ -343,7 +346,7 @@ int Quiescent (int alpha, int beta)
     }
 
     /* If it's a check and there are no legal moves then it's checkmate */
-    if (is_in_check && !legal)
+    if (is_in_check && legal == 0)
         alpha = -MATE + ply;
 
     return alpha;

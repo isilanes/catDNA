@@ -141,7 +141,6 @@ void xboard ()
         /* Tomado de TSCP recibimos del GUI el tiempo que nos queda */
         if (!strcmp(command, "time"))
         {
-            //sscanf (line, "time %d", &max_time);
             sscanf (line, "time %ld", &max_time);
             /*pasamos a milisegundos que es como trabajamos internamente*/
             max_time *= 10;
@@ -555,7 +554,7 @@ void setDistToKing()
     {
        for (j = 0; j < 64; ++j)
        {
-          dist_bonus[i][j] = 14 - ( abs( Col(i) - Col(j) ) + abs( Row(i) - Row(j) ) );
+          dist_bonus[i][j] = 14 - ( ABS( Col(i) - Col(j) ) + ABS( Row(i) - Row(j) ) );
 
           qk_dist[i][j]  = dist_bonus[i][j] * 5;
           rk_dist[i][j]  =  dist_bonus[i][j];
