@@ -106,10 +106,10 @@ int Eval (alpha, beta)
             blackRooks * value_piece[ROOK] -
             blackQueens * value_piece[QUEEN];
 
-    /* 0-level correlation: each piece/color/square has a score */
+    /* level-1 correlation: each piece/color/square has a score */
     for (i = 0; i < 64; ++i)
     {
-        int s = corr1[0][0][0];
+        score += corr1[i][piece[i]][color[i]];
     };
 
     /*
