@@ -354,7 +354,6 @@ with open(fn, 'r') as f:
             imove = 0
             string = re.sub('{[^}]*}','',string)
             string = re.sub('[^ ]*\.','|',string)
-            print(string)
             moves = string.split('|')
             for move in moves:
                 mab = move.split()
@@ -362,17 +361,17 @@ with open(fn, 'r') as f:
                     imove += 1 # count moves
                     ma, mb = mab
                     if mb == '1-0': # checkmate
-                        print(ma)
+                        #print(ma)
                         if ma[-1] == '#':
                             ma = ma[:-1]
                         pos.mv(ma)
                     else:
-                        print('---- {0}/{1} --'.format(imatch, imove))
-                        print(ma, mb)
+                        #print('---- {0}/{1} --'.format(imatch, imove))
+                        #print(ma, mb)
                         pos.mv(ma)
                         pos.mv(mb, False)
 
-                    pos.show()
+                    #pos.show()
                     pos.save()
 
             string = ''
@@ -388,18 +387,35 @@ for p in range(-6,7):
             totals[p] += pos.stats[i,j,p]
 
 # Show statistics:
-for p in range(-6,7):
-    string = '{0:2s} ({1}):\n'.format(id2symbol[p], totals[p])
-    for i in range(8):
-        for j in range(8):
-            v = pos.stats[7-i,j,p]
-            string += '{0:3d} '.format(v)
-        string += '\n'
+if False:
+    for p in range(-6,7):
+        string = '{0:2s} ({1}):\n'.format(id2symbol[p], totals[p])
+        for i in range(8):
+            for j in range(8):
+                v = pos.stats[7-i,j,p]
+                string += '{0:3d} '.format(v)
+            string += '\n'
 
-    print(string)
+        print(string)
 
 # C-like output:
+string = 'int corr1[64][6][2] = {\n'
 for i in range(8):
     for j in range(8):
-        sq = j + i * 8
-        print(sq)
+        string += '    {\n'
+        for piece in range(1,7):
+            string += '        {'
+            vwhite = str(pos.stats[i,j,piece])
+            vblack = str(pos.stats[i,j,-piece])
+            string += vwhite + ',' + vblack
+            if piece == 6:
+                string += '}\n'
+            else:
+                string += '},\n'
+        if i == 8 and j == 8:
+            string += '    }\n'
+        else:
+            string += '    },\n'
+string += '};'
+
+print(string)
