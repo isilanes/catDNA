@@ -124,6 +124,9 @@ class State:
                             if j == from_j:
                                 if i == to_i - 1 or i == to_i - 2:
                                     origin = [i, j]
+                                    # en passant?
+                                    if self.state[i][to_j] == -1 and not self.state[to_i][to_j]:
+                                        self.state[i][to_j] = 0 # capture en passant
                                     break
                         elif j == to_j:
                             if i == to_i - 1:
@@ -138,6 +141,9 @@ class State:
                         if capture:
                             if j == from_j:
                                 if i == to_i + 1 or i == to_i + 2:
+                                    # en passant?
+                                    if self.state[i][to_j] == 1 and not self.state[to_i][to_j]:
+                                        self.state[i][to_j] = 0 # capture en passant
                                     origin = [i, j]
                                     break
                         elif j == to_j:
