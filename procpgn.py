@@ -391,3 +391,9 @@ for p in range(-6,7):
         string += '\n'
 
     print(string)
+
+# C-like output:
+for i in range(8):
+    for j in range(8):
+        sq = j + i * 8
+        print(sq)
