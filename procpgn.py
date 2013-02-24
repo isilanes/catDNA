@@ -1,5 +1,6 @@
 import re
 import sys
+import numpy as np
 
 fn = 'run.pgn'
 
@@ -8,31 +9,10 @@ fn = 'run.pgn'
 class State:
 
     def __init__(self):
-        # state[i,j] gives us the state of square in i-th row (from
-        # bottom to top), and j-th column, left to right.
-        #
-        # States are:
-        # 
-        # -6 = black king
-        # -5 = black queen
-        # -4 = black rook
-        # -3 = black knight
-        # -2 = black bishop
-        # -1 = black pawn
-        #  0 = empty
-        #  1 = white pawn
-        #  2 = white bishop
-        #  3 = white knight
-        #  4 = white rook
-        #  5 = white queen
-        #  6 = white king
-        self.state = []
-        self.state.append([4, 3, 2, 5, 6, 2, 3, 4])
-        self.state.append([1, 1, 1, 1, 1, 1, 1, 1])
-        for i in range(4):
-            self.state.append([0, 0, 0, 0, 0, 0, 0, 0])
-        self.state.append([-1, -1, -1, -1, -1, -1, -1, -1])
-        self.state.append([-4, -3, -2, -5, -6, -2, -3, -4])
+        self.place_pieces()
+
+        # Stats array:
+        self.stats = np.zeros((8,8,13,), int)
 
     # --- #
 
@@ -254,6 +234,43 @@ class State:
             else:
                 self.state[to_i][to_j] = -promote_to
 
+    # --- #
+
+    def save(self):
+        for i in range(8):
+            for j in range(8):
+                id = self.state[i][j]
+                self.stats[i,j,id] += 1
+
+    # --- #
+
+    def place_pieces(self):
+        # state[i,j] gives us the state of square in i-th row (from
+        # bottom to top), and j-th column, left to right.
+        #
+        # States are:
+        # 
+        # -6 = black king
+        # -5 = black queen
+        # -4 = black rook
+        # -3 = black knight
+        # -2 = black bishop
+        # -1 = black pawn
+        #  0 = empty
+        #  1 = white pawn
+        #  2 = white bishop
+        #  3 = white knight
+        #  4 = white rook
+        #  5 = white queen
+        #  6 = white king
+        self.state = []
+        self.state.append([4, 3, 2, 5, 6, 2, 3, 4])
+        self.state.append([1, 1, 1, 1, 1, 1, 1, 1])
+        for i in range(4):
+            self.state.append([0, 0, 0, 0, 0, 0, 0, 0])
+        self.state.append([-1, -1, -1, -1, -1, -1, -1, -1])
+        self.state.append([-4, -3, -2, -5, -6, -2, -3, -4])
+
 #------------------------------------------------------------------------#
 
 letter2j = {
@@ -301,11 +318,16 @@ symbol2id = {
 
 #------------------------------------------------------------------------#
 
+# Main object:
+pos = State()
+
+# Loop variables:
 imatch = 0 # index of match
 won = False
 read = False
 string = ''
-# Read line by line:
+
+# Read line by line, and collect info:
 with open(fn, 'r') as f:
     for line in f:
         line = line.strip()
@@ -317,7 +339,7 @@ with open(fn, 'r') as f:
 
         if won and '1.' in line:
             read = True
-            pos = State()
+            pos.place_pieces()
 
         if read:
             string += line
@@ -332,20 +354,40 @@ with open(fn, 'r') as f:
                 mab = move.split()
                 if mab:
                     imove += 1 # count moves
-                    if mab[-1] == '1-0':
-                        mab = mab[:2]
                     ma, mb = mab
-                    if ma[-1] == '#': # checkmate
-                        print('-- Fin --')
-                        print(ma, mb)
-                        pos.show()
+                    if mb == '1-0': # checkmate
+                        print(ma)
+                        if ma[-1] == '#':
+                            ma = ma[:-1]
+                        pos.mv(ma)
                     else:
                         print('---- {0}/{1} --'.format(imatch, imove))
                         print(ma, mb)
                         pos.mv(ma)
                         pos.mv(mb, False)
-                        pos.show()
+
+                    pos.show()
+                    pos.save()
 
             string = ''
             read = False
             won = False
+
+# Digest some statistics:
+totals = {}
+for p in range(-6,7):
+    totals[p] = 0
+    for i in range(8):
+        for j in range(8):
+            totals[p] += pos.stats[i,j,p]
+
+# Show statistics:
+for p in range(-6,7):
+    string = '{0:2s} ({1}):\n'.format(id2symbol[p], totals[p])
+    for i in range(8):
+        for j in range(8):
+            v = pos.stats[7-i,j,p]
+            string += '{0:3d} '.format(v)
+        string += '\n'
+
+    print(string)
