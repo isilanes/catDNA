@@ -46,27 +46,27 @@ class State:
         # Castlings:
         if mov == 'O-O': # short castling
             if white:
-                self.state[0][7] = 0
-                self.state[0][6] = 6
-                self.state[0][5] = 4
-                self.state[0][4] = 0
+                self.state[0][7] = 6
+                self.state[0][6] = 12
+                self.state[0][5] = 10
+                self.state[0][4] = 6
             else:
-                self.state[7][7] = 0
-                self.state[7][6] = -6
-                self.state[7][5] = -4
-                self.state[7][4] = 0
+                self.state[7][7] = 6
+                self.state[7][6] = 0
+                self.state[7][5] = 2
+                self.state[7][4] = 6
             return
         elif mov == 'O-O-O': # long castling
             if white:
-                self.state[0][0] = 0
-                self.state[0][2] = 6
-                self.state[0][3] = 4
-                self.state[0][4] = 0
+                self.state[0][0] = 6
+                self.state[0][2] = 12
+                self.state[0][3] = 10
+                self.state[0][4] = 6
             else:
-                self.state[7][0] = 0
-                self.state[7][2] = -6
-                self.state[7][3] = -4
-                self.state[7][4] = 0
+                self.state[7][0] = 6
+                self.state[7][2] = 0
+                self.state[7][3] = 10
+                self.state[7][4] = 6
             return
 
         # Destination square:
@@ -270,26 +270,26 @@ class State:
         #
         # States are:
         # 
-        # -6 = black king
-        # -5 = black queen
-        # -4 = black rook
-        # -3 = black knight
-        # -2 = black bishop
-        # -1 = black pawn
-        #  0 = empty
-        #  1 = white pawn
-        #  2 = white bishop
-        #  3 = white knight
-        #  4 = white rook
-        #  5 = white queen
-        #  6 = white king
+        #  0 = black king
+        #  1 = black queen
+        #  2 = black rook
+        #  3 = black bishop
+        #  4 = black knight
+        #  5 = black pawn
+        #  6 = empty
+        #  7 = white pawn
+        #  8 = white bishop
+        #  9 = white knight
+        # 10 = white rook
+        # 11 = white queen
+        # 12 = white king
         self.state = []
-        self.state.append([4, 2, 3, 5, 6, 3, 2, 4])
-        self.state.append([1, 1, 1, 1, 1, 1, 1, 1])
+        self.state.append([10, 8, 9, 11, 12, 9, 8, 10])
+        self.state.append([7, 7, 7, 7, 7, 7, 7, 7])
         for i in range(4):
-            self.state.append([0, 0, 0, 0, 0, 0, 0, 0])
-        self.state.append([-1, -1, -1, -1, -1, -1, -1, -1])
-        self.state.append([-4, -2, -3, -5, -6, -3, -2, -4])
+            self.state.append([6, 6, 6, 6, 6, 6, 6, 6])
+        self.state.append([5, 5, 5, 5, 5, 5, 5, 5])
+        self.state.append([2, 4, 3, 1, 0, 3, 4, 2])
 
 #------------------------------------------------------------------------#
 
@@ -304,36 +304,22 @@ letter2j = {
         'h' : 7,
         }
 
-id2symbol = {
-        -6 : 'k',
-        -5 : 'q',
-        -4 : 'r',
-        -3 : 'b',
-        -2 : 'n',
-        -1 : 'p',
-         0 : '.',
-         1 : 'P',
-         2 : 'N',
-         3 : 'B',
-         4 : 'R',
-         5 : 'Q',
-         6 : 'K',
-        }
+id2symbol = [ 'k', 'q', 'r', 'b', 'n', 'p', '.', 'P', 'N', 'B', 'R', 'Q', 'K' ]
 
 symbol2id = {
-        'k' : -6,
-        'q' : -5,
-        'r' : -4,
-        'b' : -3,
-        'n' : -2,
-        'p' : -1,
-        '.' :  0,
-        'P' :  1,
-        'N' :  2,
-        'B' :  3,
-        'R' :  4,
-        'Q' :  5,
-        'K' :  6,
+        'k' : 0,
+        'q' : 1,
+        'r' : 2,
+        'b' : 3,
+        'n' : 4,
+        'p' : 5,
+        '.' : 6,
+        'P' : 7,
+        'N' : 8,
+        'B' : 9,
+        'R' : 10,
+        'Q' : 11,
+        'K' : 12,
         }
 
 #------------------------------------------------------------------------#
