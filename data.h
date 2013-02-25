@@ -51,5 +51,9 @@ int bk_dist[64][64];
 int fifty;
 
 /* PST-like tables */
+
+/* corr0 is corr0[piece][color] */
+int corr0[6][2];
+
 /* corr1 is corr1[square][piece][color] */
 int corr1[64][6][2];

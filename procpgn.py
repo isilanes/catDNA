@@ -11,8 +11,9 @@ class State:
     def __init__(self):
         self.place_pieces()
 
-        # Stats array:
-        self.stats = np.zeros((8,8,13,), int)
+        # Stats arrays:
+        self.corr0 = np.zeros((13,), int)
+        self.corr1 = np.zeros((8,8,13,), int)
 
     # --- #
 
@@ -247,11 +248,19 @@ class State:
     # --- #
 
     def save(self, dta):
-        # If won, add, if lost subtract:
+        # If won, add, if lost subtract.
+
+        # corr0
         for i in range(8):
             for j in range(8):
                 id = self.state[i][j]
-                self.stats[i,j,id] += dta
+                self.corr0[id] += dta
+
+        # corr1
+        for i in range(8):
+            for j in range(8):
+                id = self.state[i][j] + 6 # state in (-6,+6), id in (0,12)
+                self.corr1[i,j,id] += dta
 
     # --- #
 
@@ -417,25 +426,36 @@ if debug:
 
 # Digest some statistics:
 totals = {}
-for p in range(-6,7):
+for p in range(13):
     totals[p] = 0
     for i in range(8):
         for j in range(8):
-            totals[p] += pos.stats[i,j,p]
+            totals[p] += pos.corr1[i,j,p]
 
 # Show statistics:
 if False:
-    for p in range(-6,7):
+    for p in range(13):
         string = '{0:2s} ({1}):\n'.format(id2symbol[p], totals[p])
         for i in range(8):
             for j in range(8):
-                v = pos.stats[7-i,j,p]
+                v = pos.corr1[7-i,j,p]
                 string += '{0:3d} '.format(v)
             string += '\n'
 
         print(string)
 
-# C-like output:
+# --- corr0 --- #
+max = 0
+ave = 0
+string = 'int corr0[6][2] = {\n'
+for piece in range(1,7):
+    pass
+string += '};\n'
+
+string += '\n// n = {2}; max = {0:.2f}; ave = {1:.3f}'.format(max, ave/(64*6*2), nstates)
+print(string)
+
+# --- corr1 --- #
 max = 0
 ave = 0
 string = 'int corr1[64][6][2] = {\n'
@@ -444,10 +464,8 @@ for i in range(8):
         string += '    {\n'
         for piece in range(1,7):
             string += '        {'
-            #vwhite = str(pos.stats[i,j,piece])
-            #vblack = str(pos.stats[i,j,-piece])
-            vwhite = 1000.0*pos.stats[i,j,piece]/nstates
-            vblack = 1000.0*pos.stats[i,j,-piece]/nstates
+            vwhite = 1000.0*pos.corr1[i,j,piece]/nstates
+            vblack = 1000.0*pos.corr1[i,j,-piece]/nstates
 
             if abs(vwhite) > max:
                 max = abs(vwhite)
@@ -463,7 +481,7 @@ for i in range(8):
                 string += '}\n'
             else:
                 string += '},\n'
-        if i == 8 and j == 8:
+        if i == 7 and j == 7:
             string += '    }\n'
         else:
             string += '    },\n'
