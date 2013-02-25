@@ -109,13 +109,8 @@ int Eval (alpha, beta)
     /* level-1 correlation: each square/piece/color combination has a score */
     for (i = 0; i < 64; ++i)
     {
-        //score += 0.0*corr1[i][piece[i]][color[i]];
+        score += corr1[i][piece[i]][color[i]];
     };
-
-    /*
-     * 1-level correlation: each piece/color/square(i)|piece/color/square(j) has a score, 
-     * where for each i there is a single corresponding j.
-     */
 
     /* Finally we return the score, taking into account the side to move */
 

@@ -139,8 +139,6 @@ class State:
                     # Black PAWN:
                     elif piece == -1:
                         if capture:
-                            print('cap')
-                            print(from_j)
                             if j == from_j:
                                 if i == to_i + 1:
                                     # en passant?
@@ -336,12 +334,13 @@ pos = State()
 
 # Loop variables:
 is_match = False
-imatch = 0 # index of match
+imatch = 0   # index of match
+nstates = 0 # number of total states taken into account
 won = False
 lost = False
 read = False
 string = ''
-debug = True
+debug = False
 
 # Read line by line, and collect info:
 with open(fn, 'r') as f:
@@ -404,6 +403,7 @@ with open(fn, 'r') as f:
                     if debug:
                         pos.show()
                     pos.save(dta)
+                    nstates += 1
 
             # Clear some variables for next loop cycle:
             string = ''
@@ -412,7 +412,7 @@ with open(fn, 'r') as f:
             lost = False
 
 if debug:
-    print("done")
+    print("done {0} states".format(nstates))
     sys.exit()
 
 # Digest some statistics:
@@ -436,14 +436,28 @@ if False:
         print(string)
 
 # C-like output:
+max = 0
+ave = 0
 string = 'int corr1[64][6][2] = {\n'
 for i in range(8):
     for j in range(8):
         string += '    {\n'
         for piece in range(1,7):
             string += '        {'
-            vwhite = str(pos.stats[i,j,piece])
-            vblack = str(pos.stats[i,j,-piece])
+            #vwhite = str(pos.stats[i,j,piece])
+            #vblack = str(pos.stats[i,j,-piece])
+            vwhite = 1000.0*pos.stats[i,j,piece]/nstates
+            vblack = 1000.0*pos.stats[i,j,-piece]/nstates
+
+            if abs(vwhite) > max:
+                max = abs(vwhite)
+            if abs(vblack) > max:
+                max = abs(vblack)
+
+            ave += abs(vwhite) + abs(vblack)
+
+            vwhite = '{0:.0f}'.format(vwhite)
+            vblack = '{0:.0f}'.format(vblack)
             string += vwhite + ',' + vblack
             if piece == 6:
                 string += '}\n'
@@ -455,4 +469,5 @@ for i in range(8):
             string += '    },\n'
 string += '};'
 
+string += '\n// n = {2}; max = {0:.2f}; ave = {1:.3f}'.format(max, ave/(64*6*2), nstates)
 print(string)
