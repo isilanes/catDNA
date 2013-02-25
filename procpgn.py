@@ -132,7 +132,7 @@ class State:
                             if i == to_i - 1:
                                 origin = [i, j]
                                 break
-                            if i == to_i - 2 and not self.state[i+1][j]:
+                            elif i == to_i - 2 and not self.state[i+1][j]:
                                 origin = [i, j]
                                 break
 
@@ -152,7 +152,7 @@ class State:
                             if i == to_i + 1:
                                 origin = [i, j]
                                 break
-                            if i == to_i + 2 and not self.state[i-1][j]:
+                            elif i == to_i + 2 and not self.state[i-1][j]:
                                 origin = [i, j]
                                 break
 
@@ -162,6 +162,10 @@ class State:
                         dj = abs(to_j - j)
                         if from_j < 8:
                             if j == from_j:
+                                origin = [i, j]
+                                break
+                        elif from_i < 8:
+                            if i == from_i:
                                 origin = [i, j]
                                 break
                         else:
@@ -331,6 +335,7 @@ symbol2id = {
 pos = State()
 
 # Loop variables:
+is_match = False
 imatch = 0 # index of match
 won = False
 lost = False
@@ -345,20 +350,20 @@ with open(fn, 'r') as f:
         if '[Event ' in line: # count matches
             imatch += 1
 
-        if 'Result' in line and '1-0' in line:
-            won = True
+        if 'Result' in line:
+            if '1-0' in line:
+                won = True
+            elif '0-1' in line:
+                lost = True
 
-        if 'Result' in line and '0-1' in line:
-            lost = True
-
-        if won or lost and '1.' in line:
+        if (won or lost) and '1.' in line:
             read = True
             pos.place_pieces()
 
         if read:
             string += line
 
-        if read and '1-0' in line or '0-1' in line:
+        if read and ('1-0' in line or '0-1' in line):
             # dta=1 (whites won) or dta=-1 (whites lost):
             dta = -1
             if '1-0' in line:
@@ -370,13 +375,20 @@ with open(fn, 'r') as f:
             moves = string.split('|')
             for move in moves:
                 mab = move.split()
+                ma, mb = False, False
                 if mab:
                     if mab[-1] == '1-0' or mab[-1] == '0-1':
-                        mab = mab[:2]
+                        mab = mab[:-1]
+                    if len(mab) == 2:
+                        ma, mb = mab[:2]
+                    else:
+                        ma = mab[0]
+                        mb = False
+
                     imove += 1 # count moves
-                    ma, mb = mab
-                    if ma[-1] == '#': # white checkmate
-                        ma = ma[:-1]
+                    if not mb: # white checkmate (no black movement)
+                        if ma[-1] == '#':
+                            ma = ma[:-1]
                         if debug:
                             print(ma)
                         pos.mv(ma)
@@ -393,9 +405,11 @@ with open(fn, 'r') as f:
                         pos.show()
                     pos.save(dta)
 
+            # Clear some variables for next loop cycle:
             string = ''
             read = False
             won = False
+            lost = False
 
 if debug:
     print("done")
