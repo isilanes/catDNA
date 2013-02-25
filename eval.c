@@ -109,7 +109,7 @@ int Eval (alpha, beta)
     /* level-1 correlation: each square/piece/color combination has a score */
     for (i = 0; i < 64; ++i)
     {
-        score += corr1[i][piece[i]][color[i]];
+        //score += 0.0*corr1[i][piece[i]][color[i]];
     };
 
     /*
@@ -129,7 +129,7 @@ int Eval (alpha, beta)
     }
 }
 
-/* Returns 1 if no enough material on the board */
+/* Returns 1 if not enough material on the board */
 int NoMaterial()
 {
     if (whitePawns == 0 && blackPawns == 0)

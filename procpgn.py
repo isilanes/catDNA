@@ -7,7 +7,7 @@ fn = 'run.pgn'
 #------------------------------------------------------------------------#
 
 class State:
-
+    
     def __init__(self):
         self.place_pieces()
 
@@ -122,7 +122,7 @@ class State:
                     if piece == 1:
                         if capture:
                             if j == from_j:
-                                if i == to_i - 1 or i == to_i - 2:
+                                if i == to_i - 1:
                                     origin = [i, j]
                                     # en passant?
                                     if self.state[i][to_j] == -1 and not self.state[to_i][to_j]:
@@ -139,8 +139,10 @@ class State:
                     # Black PAWN:
                     elif piece == -1:
                         if capture:
+                            print('cap')
+                            print(from_j)
                             if j == from_j:
-                                if i == to_i + 1 or i == to_i + 2:
+                                if i == to_i + 1:
                                     # en passant?
                                     if self.state[i][to_j] == 1 and not self.state[to_i][to_j]:
                                         self.state[i][to_j] = 0 # capture en passant
@@ -242,11 +244,12 @@ class State:
 
     # --- #
 
-    def save(self):
+    def save(self, dta):
+        # If won, add, if lost subtract:
         for i in range(8):
             for j in range(8):
                 id = self.state[i][j]
-                self.stats[i,j,id] += 1
+                self.stats[i,j,id] += dta
 
     # --- #
 
@@ -294,7 +297,7 @@ id2symbol = {
         -6 : 'k',
         -5 : 'q',
         -4 : 'r',
-        -2 : 'b',
+        -3 : 'b',
         -2 : 'n',
         -1 : 'p',
          0 : '.',
@@ -330,8 +333,10 @@ pos = State()
 # Loop variables:
 imatch = 0 # index of match
 won = False
+lost = False
 read = False
 string = ''
+debug = True
 
 # Read line by line, and collect info:
 with open(fn, 'r') as f:
@@ -343,14 +348,22 @@ with open(fn, 'r') as f:
         if 'Result' in line and '1-0' in line:
             won = True
 
-        if won and '1.' in line:
+        if 'Result' in line and '0-1' in line:
+            lost = True
+
+        if won or lost and '1.' in line:
             read = True
             pos.place_pieces()
 
         if read:
             string += line
 
-        if read and '1-0' in line:
+        if read and '1-0' in line or '0-1' in line:
+            # dta=1 (whites won) or dta=-1 (whites lost):
+            dta = -1
+            if '1-0' in line:
+                dta = 1
+            
             imove = 0
             string = re.sub('{[^}]*}','',string)
             string = re.sub('[^ ]*\.','|',string)
@@ -358,25 +371,35 @@ with open(fn, 'r') as f:
             for move in moves:
                 mab = move.split()
                 if mab:
+                    if mab[-1] == '1-0' or mab[-1] == '0-1':
+                        mab = mab[:2]
                     imove += 1 # count moves
                     ma, mb = mab
-                    if mb == '1-0': # checkmate
-                        #print(ma)
-                        if ma[-1] == '#':
-                            ma = ma[:-1]
+                    if ma[-1] == '#': # white checkmate
+                        ma = ma[:-1]
+                        if debug:
+                            print(ma)
                         pos.mv(ma)
                     else:
-                        #print('---- {0}/{1} --'.format(imatch, imove))
-                        #print(ma, mb)
+                        if mb[-1] == '#': # black checkmate
+                            mb = mb[:-1]
+                        if debug:
+                            print('---- {0}/{1} --'.format(imatch, imove))
+                            print(ma, mb)
                         pos.mv(ma)
                         pos.mv(mb, False)
 
-                    #pos.show()
-                    pos.save()
+                    if debug:
+                        pos.show()
+                    pos.save(dta)
 
             string = ''
             read = False
             won = False
+
+if debug:
+    print("done")
+    sys.exit()
 
 # Digest some statistics:
 totals = {}
