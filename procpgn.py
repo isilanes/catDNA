@@ -6,6 +6,23 @@ fn = 'run.pgn'
 
 #------------------------------------------------------------------------#
 
+# Global vars:
+EMPTY       = 0
+blackKing   = 1
+blackQueen  = 2
+blackRook   = 3
+blackBishop = 4
+blackKnight = 5
+blackPawn   = 6
+whitePawn   = 7
+whiteKnight = 8
+whiteBishop = 9
+whiteRook   = 10
+whiteQueen  = 11
+whiteKing   = 12
+
+#------------------------------------------------------------------------#
+
 class State:
     
     def __init__(self):
@@ -35,38 +52,43 @@ class State:
         # Take out check indication, if present:
         if mov[-1] == '+':
             mov = mov[:-1]
+        if mov[-1] == '#':
+            mov = mov[:-1]
         
         # Promotion?:
         promotion = False
         if mov[-2] == '=':
             promotion = True
-            promote_to = symbol2id[mov[-1]]
+            if white:
+                promote_to = symbol2id[mov[-1]]
+            else:
+                promote_to = symbol2id[mov[-1].lower()] # lowercase white piece is equivalent black piece
             mov = mov[:-2]
 
         # Castlings:
         if mov == 'O-O': # short castling
             if white:
-                self.state[0][7] = 6
-                self.state[0][6] = 12
-                self.state[0][5] = 10
-                self.state[0][4] = 6
+                self.state[0][7] = EMPTY
+                self.state[0][6] = whiteKing
+                self.state[0][5] = whiteRook
+                self.state[0][4] = EMPTY
             else:
-                self.state[7][7] = 6
-                self.state[7][6] = 0
-                self.state[7][5] = 2
-                self.state[7][4] = 6
+                self.state[7][7] = EMPTY
+                self.state[7][6] = blackKing
+                self.state[7][5] = blackRook
+                self.state[7][4] = EMPTY
             return
         elif mov == 'O-O-O': # long castling
             if white:
-                self.state[0][0] = 6
-                self.state[0][2] = 12
-                self.state[0][3] = 10
-                self.state[0][4] = 6
+                self.state[0][0] = EMPTY
+                self.state[0][2] = whiteKing
+                self.state[0][3] = whiteRook
+                self.state[0][4] = EMPTY
             else:
-                self.state[7][0] = 6
-                self.state[7][2] = 0
-                self.state[7][3] = 10
-                self.state[7][4] = 6
+                self.state[7][0] = EMPTY
+                self.state[7][2] = blackKing
+                self.state[7][3] = blackRook
+                self.state[7][4] = EMPTY
             return
 
         # Destination square:
@@ -74,23 +96,33 @@ class State:
         to_j = letter2j[mov[-2]]
 
         # Which piece type was moved?:
-        piece = 1
-        if mov[0] == 'N':
-            piece = 2
-        elif mov[0] == 'B':
-            piece = 3
-        elif mov[0] == 'R':
-            piece = 4
-        elif mov[0] == 'Q':
-            piece = 5
-        elif mov[0] == 'K':
-            piece = 6
-
-        if not white:
-            piece = -piece
+        if white:
+            piece = whitePawn
+            if mov[0] == 'N':
+                piece = whiteKnight
+            elif mov[0] == 'B':
+                piece = whiteBishop
+            elif mov[0] == 'R':
+                piece = whiteRook
+            elif mov[0] == 'Q':
+                piece = whiteQueen
+            elif mov[0] == 'K':
+                piece = whiteKing
+        else:
+            piece = blackPawn
+            if mov[0] == 'N':
+                piece = blackKnight
+            elif mov[0] == 'B':
+                piece = blackBishop
+            elif mov[0] == 'R':
+                piece = blackRook
+            elif mov[0] == 'Q':
+                piece =blackQueen
+            elif mov[0] == 'K':
+                piece = blackKing
 
         # Extra info?:
-        if abs(piece) == 1:
+        if piece == whitePawn or piece == blackPawn:
             xtra = mov[:-2]
         else:
             xtra = mov[1:-2]
@@ -120,43 +152,43 @@ class State:
             for j in range(8):
                 if self.state[i][j] == piece:
                     # White PAWN:
-                    if piece == 1:
+                    if piece == whitePawn:
                         if capture:
                             if j == from_j:
                                 if i == to_i - 1:
                                     origin = [i, j]
                                     # en passant?
-                                    if self.state[i][to_j] == -1 and not self.state[to_i][to_j]:
-                                        self.state[i][to_j] = 0 # capture en passant
+                                    if self.state[i][to_j] == blackPawn and self.state[to_i][to_j] == EMPTY:
+                                        self.state[i][to_j] = EMPTY # capture en passant
                                     break
                         elif j == to_j:
                             if i == to_i - 1:
                                 origin = [i, j]
                                 break
-                            elif i == to_i - 2 and not self.state[i+1][j]:
+                            elif i == to_i - 2 and self.state[i+1][j] == EMPTY:
                                 origin = [i, j]
                                 break
 
                     # Black PAWN:
-                    elif piece == -1:
+                    elif piece == blackPawn:
                         if capture:
                             if j == from_j:
                                 if i == to_i + 1:
                                     # en passant?
-                                    if self.state[i][to_j] == 1 and not self.state[to_i][to_j]:
-                                        self.state[i][to_j] = 0 # capture en passant
+                                    if self.state[i][to_j] == whitePawn and self.state[to_i][to_j] == EMPTY:
+                                        self.state[i][to_j] = EMPTY # capture en passant
                                     origin = [i, j]
                                     break
                         elif j == to_j:
                             if i == to_i + 1:
                                 origin = [i, j]
                                 break
-                            elif i == to_i + 2 and not self.state[i-1][j]:
+                            elif i == to_i + 2 and self.state[i-1][j] == EMPTY:
                                 origin = [i, j]
                                 break
 
                     # KNIGHTs:
-                    elif abs(piece) == 2:
+                    elif piece == whiteKnight or piece == blackKnight:
                         di = abs(to_i - i)
                         dj = abs(to_j - j)
                         if from_j < 8:
@@ -173,7 +205,7 @@ class State:
                                 break
 
                     # BISHOPs:
-                    elif abs(piece) == 3:
+                    elif piece == whiteBishop or piece == blackBishop:
                         di = abs(to_i - i)
                         dj = abs(to_j - j)
                         if di == dj:
@@ -181,7 +213,7 @@ class State:
                             break
 
                     # ROOKs:
-                    elif abs(piece) == 4:
+                    elif piece == whiteRook or piece == blackRook:
                         if from_j < 8:
                             if j == from_j:
                                 origin = [i, j]
@@ -197,7 +229,7 @@ class State:
                                 last  = max(i,to_i)
                                 no_piece = True
                                 for ii in range(first, last):
-                                    if self.state[ii][j]:
+                                    if self.state[ii][j] != EMPTY:
                                         no_piece = False
                                         break
 
@@ -210,7 +242,7 @@ class State:
                                 last  = max(j,to_j)
                                 no_piece = True
                                 for jj in range(first, last):
-                                    if self.state[i][jj]:
+                                    if self.state[i][jj] != EMPTY:
                                         no_piece = False
                                         break
 
@@ -219,12 +251,12 @@ class State:
                                     break
 
                     # QUEENs:
-                    elif abs(piece) == 5:
+                    elif piece == whiteQueen or piece == blackQueen:
                         origin = [i, j]
                         break
 
                     # KINGs:
-                    elif abs(piece) == 6:
+                    elif piece == whiteKing or piece == blackKing:
                         origin = [i, j]
                         break
 
@@ -233,17 +265,14 @@ class State:
             sys.exit()
 
         # Delete from origin:
-        self.state[origin[0]][origin[1]] = 0
+        self.state[origin[0]][origin[1]] = EMPTY
 
         # Place into destiny:
         self.state[to_i][to_j] = piece
 
         # Pawn promotion:
         if promotion:
-            if white:
-                self.state[to_i][to_j] = promote_to
-            else:
-                self.state[to_i][to_j] = -promote_to
+            self.state[to_i][to_j] = promote_to
 
     # --- #
 
@@ -259,7 +288,7 @@ class State:
         # corr1
         for i in range(8):
             for j in range(8):
-                id = self.state[i][j] + 6 # state in (-6,+6), id in (0,12)
+                id = self.state[i][j]
                 self.corr1[i,j,id] += dta
 
     # --- #
@@ -270,13 +299,13 @@ class State:
         #
         # States are:
         # 
-        #  0 = black king
-        #  1 = black queen
-        #  2 = black rook
-        #  3 = black bishop
-        #  4 = black knight
-        #  5 = black pawn
-        #  6 = empty
+        #  0 = empty
+        #  1 = black king
+        #  2 = black queen
+        #  3 = black rook
+        #  4 = black bishop
+        #  5 = black knight
+        #  6 = black pawn
         #  7 = white pawn
         #  8 = white bishop
         #  9 = white knight
@@ -284,12 +313,22 @@ class State:
         # 11 = white queen
         # 12 = white king
         self.state = []
-        self.state.append([10, 8, 9, 11, 12, 9, 8, 10])
-        self.state.append([7, 7, 7, 7, 7, 7, 7, 7])
+
+        # White pieces:
+        self.state.append([whiteRook, whiteKnight, whiteBishop, whiteQueen, \
+                whiteKing, whiteBishop, whiteKnight, whiteRook])
+        self.state.append([whitePawn, whitePawn, whitePawn, whitePawn, \
+                whitePawn, whitePawn, whitePawn, whitePawn])
+
+        # Empty squares:
         for i in range(4):
-            self.state.append([6, 6, 6, 6, 6, 6, 6, 6])
-        self.state.append([5, 5, 5, 5, 5, 5, 5, 5])
-        self.state.append([2, 4, 3, 1, 0, 3, 4, 2])
+            self.state.append([EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY])
+
+        # Black pieces:
+        self.state.append([blackPawn, blackPawn, blackPawn, blackPawn, \
+                blackPawn, blackPawn, blackPawn, blackPawn])
+        self.state.append([blackRook, blackKnight, blackBishop, blackQueen, \
+                blackKing, blackBishop, blackKnight, blackRook])
 
 #------------------------------------------------------------------------#
 
@@ -304,38 +343,52 @@ letter2j = {
         'h' : 7,
         }
 
-id2symbol = [ 'k', 'q', 'r', 'b', 'n', 'p', '.', 'P', 'N', 'B', 'R', 'Q', 'K' ]
+id2symbol = {
+    blackKing   : 'k',
+    blackQueen  : 'q',
+    blackRook   : 'r',
+    blackBishop : 'b',
+    blackKnight : 'n',
+    blackPawn   : 'p',
+    EMPTY       : '.',
+    whitePawn   : 'P',
+    whiteKnight : 'N',
+    whiteBishop : 'B',
+    whiteRook   : 'R',
+    whiteQueen  : 'Q',
+    whiteKing   : 'K',
+    }
 
 symbol2id = {
-        'k' : 0,
-        'q' : 1,
-        'r' : 2,
-        'b' : 3,
-        'n' : 4,
-        'p' : 5,
-        '.' : 6,
-        'P' : 7,
-        'N' : 8,
-        'B' : 9,
-        'R' : 10,
-        'Q' : 11,
-        'K' : 12,
+        'k' : blackKing,
+        'q' : blackQueen,
+        'r' : blackRook,
+        'b' : blackBishop,
+        'n' : blackKnight,
+        'p' : blackPawn,
+        '.' : EMPTY,
+        'P' : whitePawn,
+        'N' : whiteKnight,
+        'B' : whiteBishop,
+        'R' : whiteRook,
+        'Q' : whiteQueen,
+        'K' : whiteKing,
         }
 
 #------------------------------------------------------------------------#
 
 # Main object:
-pos = State()
+S = State()
 
 # Loop variables:
 is_match = False
-imatch = 0   # index of match
+imatch = 0  # index of match
 nstates = 0 # number of total states taken into account
 won = False
 lost = False
 read = False
 string = ''
-debug = False
+debug = True
 
 # Read line by line, and collect info:
 with open(fn, 'r') as f:
@@ -352,7 +405,7 @@ with open(fn, 'r') as f:
 
         if (won or lost) and '1.' in line:
             read = True
-            pos.place_pieces()
+            S.place_pieces()
 
         if read:
             string += line
@@ -381,23 +434,19 @@ with open(fn, 'r') as f:
 
                     imove += 1 # count moves
                     if not mb: # white checkmate (no black movement)
-                        if ma[-1] == '#':
-                            ma = ma[:-1]
                         if debug:
                             print(ma)
-                        pos.mv(ma)
+                        S.mv(ma)
                     else:
-                        if mb[-1] == '#': # black checkmate
-                            mb = mb[:-1]
                         if debug:
                             print('---- {0}/{1} --'.format(imatch, imove))
                             print(ma, mb)
-                        pos.mv(ma)
-                        pos.mv(mb, False)
+                        S.mv(ma)
+                        S.mv(mb, False)
 
                     if debug:
-                        pos.show()
-                    pos.save(dta)
+                        S.show()
+                    S.save(dta)
                     nstates += 1
 
             # Clear some variables for next loop cycle:
