@@ -1,5 +1,6 @@
 import re
 import sys
+import System as S
 
 #----------------------------------------------------------------------#
 
@@ -24,7 +25,7 @@ def fen2str(fen):
 #----------------------------------------------------------------------#
 
 def show_str(string):
-    print()
+    print('')
     for i in range(8):
         line = string[i*8:i*8+8]
         chars = [ x for x in line ]
@@ -37,6 +38,10 @@ class Correlation:
     '''Holds correlation (statistical) data conveniently.'''
 
 #----------------------------------------------------------------------#
+
+# Use pgn-extract to obtain fen.out:
+cmnd = '$HOME/soft/pgn-extract/pgn-extract --fencomments run.pgn > fen.out'
+S.cli(cmnd)
 
 # Variables:
 fn   = 'fen.out'
