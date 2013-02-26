@@ -3,7 +3,17 @@
 # Variables:
 GCC=gcc
 OPTS="-O3"
-CFILES="corr.c board.c data.c eval.c search.c utils.c main.c"
 
-# Compile:
-$GCC $OPTS -o catDNA $CFILES
+# Compile modules:
+$GCC $OPTS -c src/corr.c
+$GCC $OPTS -c src/board.c
+$GCC $OPTS -c src/data.c
+$GCC $OPTS -c src/eval.c
+$GCC $OPTS -c src/search.c
+$GCC $OPTS -c src/utils.c
+
+# Main:
+$GCC $OPTS -o catDNA -g *.o src/main.c
+
+# Clean:
+rm -f *.o
