@@ -1,3 +1,5 @@
 catDNA
 TDDBII.bin
-pgn
+pgn/fen.out
+pgn/run.pgn*
+pgn/run.conf
