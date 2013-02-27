@@ -22,15 +22,10 @@ int Eval (alpha, beta)
     int i;
     for (i = 0; i < 64; ++i)
     {
-        if ( piece[i] < 7 ) // if there is some piece in this square
+        if ( piece[i] < 6 ) // if there is some piece in this square
         {
             /* level-0 correlation: each piece has a value */
-            int v = corr0[piece[i]];
-	    if ( color[i] == WHITE )
-	    {
-		    v = -v;
-	    }
-	    score += v;
+            score += corr0[piece[i]];
             
             /* level-1 correlation: each square/piece/color combination has a value */
             //score += corr1[i][piece[i]][color[i]];
