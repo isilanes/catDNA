@@ -2,6 +2,7 @@
 #include "defs.h"
 #include "data.h"
 #include "protos.h"
+#include "corr.h"
 
 /*
  *
@@ -25,7 +26,8 @@ int Eval (alpha, beta)
         if ( piece[i] < 6 ) // if there is some piece in this square
         {
             /* level-0 correlation: each piece has a value */
-            score += corr0[piece[i]];
+            //score += corr0[piece[i]];
+            score += corr0[2];
             
             /* level-1 correlation: each square/piece/color combination has a value */
             //score += corr1[i][piece[i]][color[i]];

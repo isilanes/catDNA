@@ -13,8 +13,8 @@ $GCC $OPTS -c src/search.c
 $GCC $OPTS -c src/utils.c
 
 # Main:
-$GCC $OPTS -o catDNA -g corr.o [bd-z]*.o src/main.c
-#$GCC $OPTS -o catDNA -g *.o src/main.c
+#$GCC $OPTS -o catDNA -g corr.o [bd-z]*.o src/main.c
+$GCC $OPTS -o catDNA -g *.o src/main.c
 
 # Clean:
 rm -f *.o
