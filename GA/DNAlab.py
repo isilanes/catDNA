@@ -11,6 +11,5 @@ for i in range(1):
     P.members[0].sequence[0] = 310
     P.members[1].sequence[3] = 900
 
-    # Generate catDNA executable:
-    for m in P.members:
-        print(m.sequence)
+    # Run a cycle:
+    P.run()

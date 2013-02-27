@@ -3,3 +3,6 @@ TDDBII.bin
 pgn/fen.out
 pgn/run.pgn*
 pgn/run.conf
+GA/corr.c
+GA/arena
+GA/run.sh
