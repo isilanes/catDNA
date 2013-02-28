@@ -1,6 +1,6 @@
 import random
+import subprocess
 import numpy as np
-import System as S
 
 #----------------------------------------------------------------------#
 
@@ -41,12 +41,14 @@ class Genome:
         # Do compile:
         cmnd = './build-ga.sh {0} && mv catDNA-{0} arena/'.format(self.seq2str())
         #print(cmnd)
-        S.cli(cmnd)
+        sp = subprocess.Popen(cmnd, shell=True)
+        sp.communicate()
 
         # Run matches: 
         cmnd = './run.sh {0} > log'.format(self.seq2str())
         #print(cmnd)
-        S.cli(cmnd)
+        sp = subprocess.Popen(cmnd, shell=True)
+        sp.communicate()
 
         # Read log:
         with open('log', 'r') as f:

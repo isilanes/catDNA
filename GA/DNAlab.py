@@ -12,7 +12,7 @@ P.genomes[2].sequence[2] = 200
 P.genomes[3].sequence[3] = 200
 
 # Optimization loop:
-for generation in range(5):
+for generation in range(2):
 
     # Run a cycle and save:
     P.run()
