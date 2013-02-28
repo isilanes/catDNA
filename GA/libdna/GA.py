@@ -95,6 +95,7 @@ class Population:
 
     def __init__(self, nmembers=4):
         self.genomes = []
+        self.saved = {}
         for m in range(nmembers):
             self.genomes.append(Genome())
 
@@ -102,7 +103,11 @@ class Population:
 
     def run(self):
         for m in self.genomes:
-            m.run()
+            s = m.seq2str()
+            if s in self.saved:
+                m.score = self.saved[s]
+            else:
+                m.run()
 
     # --- #
 
@@ -117,10 +122,14 @@ class Population:
         for m in self.genomes:
             dsu.append([m.score, m])
         dsu.sort()
+        dsu.reverse()
         sorted = [ e[1] for e in dsu ] # sorted list
 
+        # Save score of best so far (avoid calculating it in the future):
+        self.saved[sorted[0].seq2str()] = sorted[0].score
+
         # New population:
-        new = [ sorted[0] ]
+        new = [ sorted[0] ] # keep first
 
         # Offspring of 1+2 and 1+3:
         for g in sorted[1:3]:
@@ -152,9 +161,10 @@ class Population:
 
     def show(self):
         for g in self.genomes:
-            string = '{0:.6f} '.format(g.score)
+            string = ''
             for gene in g.sequence:
                 string += '{0:04d} '.format(int(gene))
+            string += 'score = {0:.6f}'.format(g.score)
             print(string)
 
 #----------------------------------------------------------------------#
