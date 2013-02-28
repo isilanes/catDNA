@@ -30,8 +30,8 @@ class Genome:
     # --- #
 
     def run(self):
-        # Print:
-        print("Running genome {0}".format(self.sequence))
+        # Print message:
+        print("Running genome: " + self.seq2str())
 
         # Build .c file for compiling:
         string = 'int corr0[6] = { 100, ' + ', '.join([str(int(x)) for x in self.sequence]) + ', 10000 };\n'
@@ -162,11 +162,10 @@ class Population:
     # --- #
 
     def show(self):
+        print("")
         for g in self.genomes:
-            string = ''
-            for gene in g.sequence:
-                string += '{0:04d} '.format(int(gene))
-            string += 'score = {0:.6f}'.format(g.score)
+            string = g.seq2str()
+            string += ' / {0:.6f}'.format(g.score)
             print(string)
 
 #----------------------------------------------------------------------#
