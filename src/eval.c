@@ -26,22 +26,18 @@ int Eval (alpha, beta)
         if ( piece[i] < 6 ) // if there is some piece in this square
         {
             /* level-0 correlation: each piece has a value */
-            //score += corr0[piece[i]];
-            score += corr0[2];
+            score += corr0[piece[i]] * (1 - 2*color[i]); // +1 if white (0), -1 if black (1)
             
             /* level-1 correlation: each square/piece/color combination has a value */
             //score += corr1[i][piece[i]][color[i]];
         }
     };
 
-    /* Finally we return the score, taking into account the side to move */
-
-    if (side == WHITE)
-    {
-        return score;
-    }
-    else
-    {
-        return -score;
-    }
+    /* Finally we return the score, taking into account the side to move
+     * 
+     * This is equivalent to "if white return score, if black return -score", 
+     * but without if: (1 - 2*side) equals +1 if WHITE (0),
+     * and equals -1 if BLACK (1)
+     */
+    return score * (1 - 2*side);
 };
