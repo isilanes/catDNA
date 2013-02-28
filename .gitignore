@@ -6,3 +6,5 @@ pgn/run.conf
 GA/corr.c
 GA/arena
 GA/run.sh
+GA/log
+GA/ga.log
