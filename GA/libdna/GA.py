@@ -100,13 +100,13 @@ class Genome:
 
     # --- #
 
-    def mutate(self):
+    def mutate(self, variability=100):
         '''Produce random mutations to itself.'''
 
         tmp = []
 
         for gene in self.sequence:
-            gene += random.uniform(-100,100)
+            gene += random.uniform(-variability,variability)
             if gene > 9999:
                 gene = 9999
             elif gene < 100:
@@ -141,14 +141,17 @@ class Population:
     def next(self):
         # The specimens are ordered by score.
         # Specimen 1 is kept
-        # Specimen 2 and 3 are substituted by their "offspring" with 1
-        # Specimen 4 and next ones are kept, randomly mutated
+        # Specimen 2 and 3 are substituted by their "offspring" with 1, slightly mutated
+        # Specimen n > 3 are substituted by mutations of specimen n-3
 
         # Sort (decorate-sort-undecorate):
         dsu = []
         for m in self.genomes:
             dsu.append([m.score, m])
-        dsu.sort()
+        try:
+            dsu.sort()
+        except:
+            pass
         dsu.reverse()
         sorted = [ e[1] for e in dsu ] # sorted list
 
@@ -161,10 +164,11 @@ class Population:
         # Offspring of 1+2 and 1+3:
         for g in sorted[1:3]:
             off = self.offspring(sorted[0], g)
+            off.mutate(25)
             new.append(off)
 
-        # From 4th on, mutate randomly:
-        for g in sorted[3:]:
+        # From 4th on, mutate N-3rd randomly:
+        for g in sorted[:-3]:
             g.mutate()
             new.append(g)
 
