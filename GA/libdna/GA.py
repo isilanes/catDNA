@@ -1,6 +1,9 @@
+import os
+import sys
+import time
 import random
-import subprocess
 import numpy as np
+import subprocess as sp
 
 #----------------------------------------------------------------------#
 
@@ -31,7 +34,9 @@ class Genome:
 
     def run(self):
         # Print message:
-        print("Running genome: " + self.seq2str())
+        print("Running genome: {0} - ".format(self.seq2str()), end='')
+        print(" "*4, end="")
+        sys.stdout.flush()
 
         # Build .c file for compiling:
         string = 'int corr0[6] = { 100, ' + ', '.join([str(int(x)) for x in self.sequence]) + ', 10000 };\n'
@@ -39,14 +44,38 @@ class Genome:
             f.write(string)
 
         # Do compile:
-        cmnd = './build-ga.sh {0} && mv catDNA-{0} arena/'.format(self.seq2str())
-        sp = subprocess.Popen(cmnd, shell=True)
-        sp.communicate()
+        id = self.seq2str()
+        cmnd = './build-ga.sh {0} && mv catDNA-{0} arena/'.format(id)
+        build = sp.Popen(cmnd, shell=True)
+        build.communicate()
 
-        # Run matches: 
-        cmnd = './run.sh {0} > log'.format(self.seq2str())
-        sp = subprocess.Popen(cmnd, shell=True)
-        sp.communicate()
+        # Run matches, and print progress:
+        cmnd = './run.sh {0} > log'.format(id)
+        run = sp.Popen(cmnd, shell=True)
+        fn = 'arena/pgn.{0}'.format(id)
+        while run.poll() == None:
+            if os.path.isfile(fn):
+                cmnd = 'grep -c Result {0}'.format(fn)
+                grep = sp.Popen(cmnd, stdout=sp.PIPE, shell=True)
+                out, err = grep.communicate()
+                if out:
+                    out = str(out, encoding="utf-8")
+                    out = int(out.strip())
+                    string = '\b'*4 + '{0:<4d}'.format(out)
+                    print(string, end="")
+                    sys.stdout.flush()
+            time.sleep(10)
+        run.communicate()
+        
+        # Print "completion":
+        grep = sp.Popen(cmnd, stdout=sp.PIPE, shell=True)
+        out, err = grep.communicate()
+        out = str(out, encoding="utf-8")
+        out = int(out.strip())
+        string = '\b'*4 + '{0:<4d}'.format(out)
+        print(string)
+
+        sys.exit()
 
         # Read log:
         with open('log', 'r') as f:
