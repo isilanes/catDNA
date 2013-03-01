@@ -40,13 +40,11 @@ class Genome:
 
         # Do compile:
         cmnd = './build-ga.sh {0} && mv catDNA-{0} arena/'.format(self.seq2str())
-        #print(cmnd)
         sp = subprocess.Popen(cmnd, shell=True)
         sp.communicate()
 
         # Run matches: 
         cmnd = './run.sh {0} > log'.format(self.seq2str())
-        #print(cmnd)
         sp = subprocess.Popen(cmnd, shell=True)
         sp.communicate()
 
@@ -165,7 +163,7 @@ class Population:
         print("")
         for g in self.genomes:
             string = g.seq2str()
-            string += ' / {0:.6f}'.format(g.score)
+            string += ' : {0:.6f}'.format(g.score)
             print(string)
 
 #----------------------------------------------------------------------#

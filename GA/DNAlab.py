@@ -5,15 +5,15 @@ from libdna import GA
 # Initialize stuff:
 P = GA.Population(4)
 
-# Initialize population:
-P.genomes[0].sequence[0] = 200
-P.genomes[1].sequence[1] = 350
-P.genomes[2].sequence[3] = 500
-P.genomes[3].sequence[3] = 750
+# Initialize population by mutating a default population:
+for i in range(10):
+    for m in P.genomes:
+        m.mutate()
 
 # Optimization loop:
-for generation in range(2):
-    print("\n----- Generation {0} -----\n".format(generation))
+ngen = 10
+for generation in range(ngen):
+    print("\n----- Generation {0}/{1} -----\n".format(generation+1, ngen))
     
     # Run a cycle and save:
     P.run()
