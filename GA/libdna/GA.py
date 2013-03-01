@@ -75,8 +75,6 @@ class Genome:
         string = '\b'*4 + '{0:<4d}'.format(out)
         print(string)
 
-        sys.exit()
-
         # Read log:
         with open('log', 'r') as f:
             for line in f:
