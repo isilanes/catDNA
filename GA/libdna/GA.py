@@ -165,7 +165,7 @@ class Population:
         print("")
         for g in self.genomes:
             string = g.seq2str()
-            string += ' / {0:.6f}'.format(g.score)
+            string += ' : {0:.6f}'.format(g.score)
             print(string)
 
 #----------------------------------------------------------------------#
