@@ -198,4 +198,36 @@ class Population:
             string += ' : {0:.6f}'.format(g.score)
             print(string)
 
+    # --- #
+
+    def get_best(self,fn):
+        '''Get best genomes so far from file "fn".'''
+
+        # Read genomes from file, and sort by score:
+        dsu = []
+        with open(fn, 'r') as f:
+            for line in f:
+                seq, score = line.split()
+                score = float(score)
+                dsu.append([score, seq])
+
+        dsu.sort()
+        dsu.reverse()
+
+        # Get nmembers distinct genomes with highest score:
+        top = {}
+        for score, seq in dsu:
+            top[seq] = score
+            if len(top) >= len(self.genomes):
+                break
+
+        # Build population from it:
+        self.genomes = [] # blank present population
+        for seq, score  in top.items():
+            genes = [ int(x) for x in seq.split('-') ]
+            g = Genome()
+            g.sequence = genes[:]
+            g.score = score
+            self.genomes.append(g)
+
 #----------------------------------------------------------------------#
