@@ -114,7 +114,7 @@ class Genome:
             gene = int(gene)
             tmp.append(gene)
 
-        self.sequence = tmp[:]
+        return tmp
 
 #----------------------------------------------------------------------#
 
@@ -164,16 +164,17 @@ class Population:
         # Offspring of 1+2 and 1+3:
         for g in sorted[1:3]:
             off = self.offspring(sorted[0], g)
-            off.mutate(25)
+            off.sequence = off.mutate(25)
             new.append(off)
 
         # From 4th on, mutate N-3rd randomly:
         for g in sorted[:-3]:
-            g.mutate()
-            new.append(g)
+            p = Genome()
+            p.sequence = g.mutate()
+            new.append(p)
 
         # Make new population current one:
-        self.genomes = new
+        self.genomes = new[:]
 
     # --- #
 
