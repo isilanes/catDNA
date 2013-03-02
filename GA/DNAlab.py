@@ -20,8 +20,9 @@ o = parser.parse_args()
 # Initialize stuff:
 P = GA.Population(4)
 
-# Read best genomes from file:
+# Read best genomes from file, then create first generation from it:
 P.get_best('ga.log')
+P.next()
 
 # Optimization loop:
 for generation in range(o.generations):
