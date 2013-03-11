@@ -83,7 +83,8 @@ class Genome:
                     won  = int(aline[-7])
                     lost = int(aline[-5])
                     draw = int(aline[-3])
-                    score = (won * 1 + draw * 0.5) / (won + lost + draw)
+                    #score = (won * 1 + draw * 0.5) / (won + lost + draw)
+                    score = won / (won + lost)
 
         # We keep the last result:
         self.score = score
