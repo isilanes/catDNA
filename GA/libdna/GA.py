@@ -50,7 +50,7 @@ class Genome:
         build.communicate()
 
         # Run matches, and print progress:
-        cmnd = './run.sh {0} > log'.format(id)
+        cmnd = './run.sh {0} > log/{1}.log'.format(id, self.seq2str())
         run = sp.Popen(cmnd, shell=True)
         fn = 'arena/pgn.{0}'.format(id)
         while run.poll() == None:
