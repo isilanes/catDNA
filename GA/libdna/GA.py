@@ -50,9 +50,11 @@ class Genome:
         build.communicate()
 
         # Run matches, and print progress:
-        cmnd = './run.sh {0} > log/{1}.log'.format(id, self.seq2str())
+        logfile = 'log/{0}.log'.format(self.seq2str())
+        cmnd = './run.sh {0} > {1}'.format(id, logfile)
         run = sp.Popen(cmnd, shell=True)
         fn = 'log/{0}.pgn'.format(id)
+        cmnd = 'grep -c Result {0}'.format(fn)
         while run.poll() == None:
             if os.path.isfile(fn):
                 cmnd = 'grep -c Result {0}'.format(fn)
@@ -76,7 +78,7 @@ class Genome:
         print(string)
 
         # Read log:
-        with open('log', 'r') as f:
+        with open(logfile, 'r') as f:
             for line in f:
                 if 'Score of catDNA-' in line:
                     aline = line.split()
