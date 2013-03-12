@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "defs.h"
 #include "data.h"
 #include "protos.h"
+
+
+#define SEARCH_DEBUG
+
 
 MOVE ComputerThink (int m_depth)
 {
@@ -27,93 +32,103 @@ MOVE ComputerThink (int m_depth)
 //    printf ("max_time = %d\n", max_time);
 
     for (i = 1; i <= m_depth; ++i)
-    {
-        /* Reset some values before searching */
-        ply = 0;
-        count_evaluations = 0;
-        count_MakeMove = 0;
-        countquiesCalls = 0;
-        countCapCalls = 0;
-        countSearchCalls = 0;
-        nodes = 0;
-//        memset(history, 0, sizeof(history));
-
-        clock_t start;
-        clock_t stop;
-        double t = 0.0;
-
-        /* Start timer */
-        start = clock ();
-
-        /* Search now! */
-        score = Search (-MATE, MATE, i, &m, &pline);
-
-
-        /* If we've searched for a certain percentage of the avaialble time it
-        doesn't make sense to start a new ply, so we call it a day */
-//        checkup(half_time);
-
-
-        /* Aqui debe ir el 'if' que hace un break si nos quedamos sin tiempo.
-           Tomado de Darky */
-        if (must_stop)
         {
-            must_stop = 0;
-            fflush(stdout);  /* Limpiamos la salida estandar */
-            break;
-        }
+            /* Reset some values before searching */
+            ply = 0;
+            count_evaluations = 0;
+            count_MakeMove = 0;
+            countquiesCalls = 0;
+            countCapCalls = 0;
+            countSearchCalls = 0;
+            nodes = 0;
+            memset(history, 0, sizeof(history));
 
-        /* Stop timer */
-        stop = clock ();
-        t = (double) (stop - start) / CLOCKS_PER_SEC;
-        knps = ((double) (countquiesCalls + countSearchCalls) / t) / 1000.;
-        double ratio_Qsearc_Capcalls = 0;
-        ratio_Qsearc_Capcalls = (double) countCapCalls / (double) countquiesCalls;
+            clock_t start;
+            clock_t stop;
+            double t = 0.0;
 
-        double decimal_score = ((double) score) / 100.;
-        if (side == BLACK)
-        {
-            score = -score;
-            decimal_score = -decimal_score;
-        }
+            /* Start timer */
+            start = clock ();
 
-        bestMove = m;
+            /* Search now! */
+            score = Search (-MATE, MATE, i, &m, &pline);
 
-        /* After searching, print results in xboard mode
-            depth eval time nodes PV*/
-        {
-            int int_time = (int)(t * 100);
-            printf (" %d  %4d %6d %llu ", i, score, int_time, nodes);
+            /* If we've searched for a certain percentage of the avaialble time it
+            doesn't make sense to start a new ply, so we call it a day */
+            //checkup(half_time);
 
-            /* Printing PV */
-            for(j=0; j<pline.cmove; j++)
+            /* Aqui debe ir el 'if' que hace un break si nos quedamos sin tiempo.
+               Tomado de Darky */
+            if (must_stop)
+                {
+                    must_stop = 0;
+                    fflush(stdout);  /* Limpiamos la salida estandar */
+                    break;
+                }
+
+            /* If the score is too large we just stop thinking */
+            if (ABS(score) > MATE - max_depth)
+                {
+                    printf("score = %d\n", score);
+                    fflush(stdout);
+                    break;
+                }
+
+            /* Stop timer */
+            stop = clock ();
+            t = (double) (stop - start) / CLOCKS_PER_SEC;
+            knps = ((double) (countquiesCalls + countSearchCalls) / t) / 1000.;
+            double ratio_Qsearc_Capcalls = 0;
+            ratio_Qsearc_Capcalls = (double) countCapCalls / (double) countquiesCalls;
+
+            double decimal_score = ((double) score) / 100.;
+            if (side == BLACK)
+                {
+                    score = -score;
+                    decimal_score = -decimal_score;
+                }
+
+            bestMove = m;
+
+            if ( logfile )  // *not* 'user_wants_logfile' in case the original fopen() failed
             {
-              printf(" %c%d%c%d", 'a' + Col(pline.argmove[j].from),
-                                   8 - Row(pline.argmove[j].from),
-                                  'a' + Col(pline.argmove[j].dest),
-                                   8 - Row(pline.argmove[j].dest));
-              /* Checking either it's a promotion */
-              switch (pline.argmove[j].type_of_move)
-              {
-                 case MOVE_TYPE_PROMOTION_TO_QUEEN:
-                    printf("q");
-                    break;
-                 case MOVE_TYPE_PROMOTION_TO_ROOK:
-                    printf("r");
-                    break;
-                 case MOVE_TYPE_PROMOTION_TO_BISHOP:
-                    printf("b");
-                    break;
-                 case MOVE_TYPE_PROMOTION_TO_KNIGHT:
-                    printf("n");
-                    break;
-               }
+                fprintf(logfile, "In ComputerThink we have a move\n");
+                fflush(logfile);  // always flush the file!
             }
-        }
 
-        puts("");
-        fflush(stdout);
-    }
+            /* After searching, print results in xboard mode
+                depth eval time nodes PV*/
+            {
+                int int_time = (int)(t * 100);
+                printf (" %d  %4d %6d %10llu ", i, score, int_time, nodes);
+                /* Printing PV */
+                for(j=0; j<pline.cmove; j++)
+                    {
+                        printf(" %c%d%c%d", 'a' + Col(pline.argmove[j].from),
+                               8 - Row(pline.argmove[j].from),
+                               'a' + Col(pline.argmove[j].dest),
+                               8 - Row(pline.argmove[j].dest));
+                        /* Checking either it's a promotion */
+                        switch (pline.argmove[j].type_of_move)
+                            {
+                            case MOVE_TYPE_PROMOTION_TO_QUEEN:
+                                printf("q");
+                                break;
+                            case MOVE_TYPE_PROMOTION_TO_ROOK:
+                                printf("r");
+                                break;
+                            case MOVE_TYPE_PROMOTION_TO_BISHOP:
+                                printf("b");
+                                break;
+                            case MOVE_TYPE_PROMOTION_TO_KNIGHT:
+                                printf("n");
+                                break;
+                            }
+                    }
+            }
+            puts("");
+            fflush(stdout);
+        }
     return bestMove;
 }
 
@@ -152,10 +167,12 @@ int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
 
     /* If we are in a leaf node we cal quiescence instead of eval */
     if (depth == 0)
-    {
-       pline->cmove = 0;
-       return Quiescent(alpha, beta);
-    }
+        {
+            pline->cmove = 0;
+            return Quiescent(alpha, beta);
+            /* Uncomment nest line if want to make tests avoiding qsearch */
+            //return Eval(alpha, beta);
+        }
 
     /* If we're in check we want to search deeper */
     if (IsInCheck(side))
@@ -163,12 +180,12 @@ int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
 
     /* Static null move prunning */
     if (ply && !IsInCheck(side))
-    {
-        int ev = Eval(-MATE, MATE);
-        int evalua = ev - 150;
-        if (evalua >= beta)
-            return beta;
-    }
+        {
+            int ev = Eval(-MATE, MATE);
+            int evalua = ev - 150;
+            if (evalua >= beta)
+                return beta;
+        }
 
     /* Generate and count all moves for current position */
     movecnt = GenMoves (side, moveBuf);
@@ -176,65 +193,61 @@ int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
     /* Once we have all the moves available, we loop through the posible
      * moves and apply an alpha-beta search */
     for (i = 0; i < movecnt; ++i)
-    {
-        /* Here must be called OrderMove, so we have the moves are ordered before
-        picking one up from the list*/
-        MoveOrder(i, movecnt, moveBuf);
+        {
+            /* Here must be called OrderMove, so we have the moves are ordered before
+            picking one up from the list*/
+            MoveOrder(i, movecnt, moveBuf);
 
-        /* I guess this is too risky: if we have a bad capture and
-         * we aren't giving check then we just continue */
             /* If the current move isn't legal, we take it back
              * and take the next move in the list */
             if (!MakeMove (moveBuf[i]))
-            {
-                TakeBack ();
-                continue;
-            }
+                {
+                    TakeBack ();
+                    continue;
+                }
 
-        /* If we've reached this far, then we have a move available */
-        havemove = 1;
+            /* If we've reached this far, then we have a move available */
+            havemove = 1;
 
-        value = -Search(-beta, -alpha, depth - 1, &tmpMove, &line);
+            value = -Search(-beta, -alpha, depth - 1, &tmpMove, &line);
 
-        /* We've evaluated the position, so we return to the previous position in such a way
-           that when we take the next move from moveBuf everything is in order */
-        TakeBack ();
+            /* We've evaluated the position, so we return to the previous position in such a way
+               that when we take the next move from moveBuf everything is in order */
+            TakeBack ();
 
-        /* Once we have an evaluation, we use it in in an alpha-beta search */
-        if (value > alpha)
-        {
-            /* Este movimiento causo un cutoff, asi que incrementamos
-            el valor de historia para que sea ordenado antes la
-            proxima vez que se busque */
-            history[moveBuf[i].from][moveBuf[i].dest] += depth;
+            /* Once we have an evaluation, we use it in in an alpha-beta search */
+            if (value > alpha)
+                {
+                    /* Este movimiento causo un cutoff, asi que incrementamos
+                    el valor de historia para que sea ordenado antes la
+                    proxima vez que se busque */
+                    history[moveBuf[i].from][moveBuf[i].dest] += depth;
 
-            /* This move is so good and caused a cutoff */
-            if (value >= beta)
-            {
-                return beta;
-            }
+                    /* This move is so good and caused a cutoff */
+                    if (value >= beta)
+                        {
+                            return beta;
+                        }
+                    alpha = value;
+                    /* So far, current move is the best reaction for current position */
+                    *pBestMove = moveBuf[i];
 
-            alpha = value;
-            /* So far, current move is the best reaction for current position */
-            *pBestMove = moveBuf[i];
-
-            /* Update the principal line */
-            pline->argmove[0] = moveBuf[i];
-            memcpy(pline->argmove + 1, line.argmove, line.cmove * sizeof(MOVE));
-            pline->cmove = line.cmove + 1;
+                    /* Update the principal line */
+                    pline->argmove[0] = moveBuf[i];
+                    memcpy(pline->argmove + 1, line.argmove, line.cmove * sizeof(MOVE));
+                    pline->cmove = line.cmove + 1;
+                }
         }
-    }
-
 
     /* Once we've checked all the moves, if we have no legal moves,
      * then that's checkmate or stalemate */
     if (!havemove)
-    {
-        if (IsInCheck (side))
-            return -MATE + ply;	/* add ply to find the longest path to lose or shortest path to win */
-        else
-            return 0;
-    }
+        {
+            if (IsInCheck (side))
+                return -MATE + ply;	/* add ply to find the longest path to lose or shortest path to win */
+            else
+                return 0;
+        }
 
     /* 3 vecez la misma posicion */
     if (reps() >= 2)
@@ -243,7 +256,6 @@ int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
     if (fifty >= 100) /* 50 jugadas o mas */
         return 0;
 
-
     /* Finally we return alpha, the score value */
     return alpha;
 }
@@ -251,17 +263,13 @@ int Search (int alpha, int beta, int depth, MOVE * pBestMove, LINE * pline)
 int Quiescent (int alpha, int beta)
 {
     int i = 0;
-    int legal = 0;
     int movescnt = 0;
     int score = 0;
     int best = 0;
-
     MOVE qMovesBuf[200];
 
     countquiesCalls++;
     nodes++;
-
-    int is_in_check = IsInCheck(side);
 
     /* Do some housekeeping every 1024 nodes */
     if ((nodes & 1023) == 0)
@@ -272,82 +280,53 @@ int Quiescent (int alpha, int beta)
     if (reps() >= 2)
         return 0;
 
-
-    /* First we just try the evaluation function */
-    /* We generate the moves deppending either
-       we are in check or not */
-    if (is_in_check)
-    {
-        /* If we're in check we generate the legal moves */
-        movescnt = GenMoves(side, qMovesBuf);
-        countCapCalls++;
-    }
-    else
-    {
-        best = Eval(alpha, beta);
-        // --- stand pat cutoff?
-
-        if (best > alpha)
+    best = Eval(alpha, beta);
+    // --- stand pat cutoff?
+    if (best > alpha)
         {
             if (best >= beta)
                 return best;
             alpha = best;
         }
 
-        /* If we aren't in check we just generate the evasions */
-        movescnt = GenCaps (side, qMovesBuf);
-        countCapCalls++;
-    }
+    /* As we are in qasearch we generate the captures */
+    movescnt = GenCaps (side, qMovesBuf);
+    countCapCalls++;
+
+#ifdef SEARCH_DEBUG
+            if (movescnt > 200) printf("Too much moves!: %d", movescnt);
+#endif
 
     /* Now the alpha-beta search in quiescent */
     for (i = 0; i < movescnt; ++i)
-    {
+        {
         MoveOrder(i, movescnt, qMovesBuf);
 
-        /* If not in check or promotion (Thx to Pedro) and
-           it's a bad capture the we are done*/
-        if (!is_in_check && qMovesBuf[i].type_of_move < MOVE_TYPE_PROMOTION_TO_QUEEN)
-        {
             if (!MakeMove (qMovesBuf[i]))
             {
-            /* If the current move isn't legal, we take it back*
-             *  and take the next move in the list */
+                /* If the current move isn't legal, we take it back
+                 * and take the next move in the list */
                 TakeBack ();
                 continue;
             }
 
-            /* if bad capture we are done */
-            if (BadCapture(qMovesBuf[i])) continue;
-        }
-        else if (!MakeMove (qMovesBuf[i]))
-        {
-            /* If the current move isn't legal, we take it back
-             * and take the next move in the list */
+            score = -Quiescent (-beta, -alpha);
             TakeBack ();
-            continue;
+
+            if ((nodes & 1023) == 0)
+                checkup(stop_time);
+            if (must_stop)
+                return 0;
+
+            if (score >= beta)
+                return beta;
+            if (score > alpha)
+                alpha = score;
         }
-
-        /* If we're here then there's at least one legal move */
-        legal++;
-
-        score = -Quiescent (-beta, -alpha);
-        TakeBack ();
-
-        if ((nodes & 1023) == 0)
-            checkup(stop_time);
-
-        if (must_stop)
-            return 0;
-
-        if (score >= beta)
-            return beta;
-        if (score > alpha)
-            alpha = score;
-    }
-
-    /* If it's a check and there are no legal moves then it's checkmate */
-    if (is_in_check && legal == 0)
-        alpha = -MATE + ply;
+#ifdef SEARCH_DEBUG
+    if (alpha > MATE) printf("alpha too high: %d", alpha);
+    if (alpha < -MATE) printf("alpha too low: %d", alpha);
+#endif
 
     return alpha;
 }
@@ -363,19 +342,19 @@ void MoveOrder(int init, int movecounter, MOVE *orderMovesBuf)
     aux = init;
 
     for(i = (init + 1); i < movecounter; i++)
-    {
-        if (orderMovesBuf[i].grade > Max)
         {
-            Max = orderMovesBuf[i].grade;
-            aux = i;
+            if (orderMovesBuf[i].grade > Max)
+                {
+                    Max = orderMovesBuf[i].grade;
+                    aux = i;
+                }
         }
-    }
     if (Max != orderMovesBuf[init].grade)
-    {
-        Tmp = orderMovesBuf[init];
-        orderMovesBuf[init] = orderMovesBuf[aux];
-        orderMovesBuf[aux] = Tmp;
-    }
+        {
+            Tmp = orderMovesBuf[init];
+            orderMovesBuf[init] = orderMovesBuf[aux];
+            orderMovesBuf[aux] = Tmp;
+        }
 }
 
 /* checkup() is called once in a while during the search. */
@@ -383,8 +362,8 @@ void checkup(clock_t stoping_time)
 {
     must_stop = 0;
     if (get_ms() >= stoping_time)
-    {
-        must_stop = 1;
-    }
+        {
+            must_stop = 1;
+        }
 }
 
