@@ -41,3 +41,9 @@ int Eval (alpha, beta)
      */
     return score * (1 - 2*side);
 };
+
+/* Fake endGame() function. */
+inline int endGame()
+{
+    return 0;
+};
