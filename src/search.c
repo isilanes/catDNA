@@ -90,6 +90,12 @@ MOVE ComputerThink (int m_depth)
 
             bestMove = m;
 
+            if ( logfile )  // *not* 'user_wants_logfile' in case the original fopen() failed
+            {
+                fprintf(logfile, "In ComputerThink we have a move\n");
+                fflush(logfile);  // always flush the file!
+            }
+
             /* After searching, print results in xboard mode
                 depth eval time nodes PV*/
             {
