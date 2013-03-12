@@ -9,7 +9,7 @@ import subprocess as sp
 
 class Genome:
 
-    def __init__(self):
+    def __init__(self, log):
         # pawn =   100 always (no index)
         # i = 0, knight
         # i = 1, bishop
@@ -18,6 +18,7 @@ class Genome:
         # king = 10000 always (no index)
         self.sequence = np.ones((4,)) * 100
         self.score = 0
+        self.log = log
 
     # --- #
 
@@ -95,7 +96,7 @@ class Genome:
     # --- #
 
     def save(self):
-        with open('ga.log', 'a') as f:
+        with open(self.log, 'a') as f:
             string = '{0} {1:.6f}\n'.format(self.seq2str(), self.score)
             f.write(string)
 
@@ -121,11 +122,12 @@ class Genome:
 
 class Population:
 
-    def __init__(self, nmembers=4):
+    def __init__(self, nmembers=4, log=None):
         self.genomes = []
+        self.log = log
         self.saved = {}
         for m in range(nmembers):
-            self.genomes.append(Genome())
+            self.genomes.append(Genome(log=self.log))
 
     # --- #
 
@@ -170,7 +172,7 @@ class Population:
 
         # From 4th on, mutate N-3rd randomly:
         for g in sorted[:-3]:
-            p = Genome()
+            p = Genome(log=self.log)
             p.sequence = g.mutate()
             new.append(p)
 
@@ -182,7 +184,7 @@ class Population:
     def offspring(self, A, B):
         '''Generate random offspring of genomes A and B.'''
 
-        C = Genome()
+        C = Genome(log=self.log)
         for i in range(len(A.sequence)):
             Ai = A.sequence[i]
             Bi = B.sequence[i]
@@ -201,12 +203,12 @@ class Population:
 
     # --- #
 
-    def get_best(self,fn):
+    def get_best(self):
         '''Get best genomes so far from file "fn".'''
 
         # Read genomes from file, and sort by score:
         dsu = []
-        with open(fn, 'r') as f:
+        with open(self.log, 'r') as f:
             for line in f:
                 seq, score = line.split()
                 score = float(score)
@@ -226,7 +228,7 @@ class Population:
         self.genomes = [] # blank present population
         for seq, score  in top.items():
             genes = [ int(x) for x in seq.split('-') ]
-            g = Genome()
+            g = Genome(log=self.log)
             g.sequence = genes[:]
             g.score = score
             self.genomes.append(g)

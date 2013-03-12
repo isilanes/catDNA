@@ -18,10 +18,10 @@ o = parser.parse_args()
 #--------------------------------------------------------------------------------#
 
 # Initialize stuff:
-P = GA.Population(4)
+P = GA.Population(4, log='log/ga.log')
 
 # Read best genomes from file, then create first generation from it:
-P.get_best('ga.log')
+P.get_best()
 P.next()
 
 # Optimization loop:
