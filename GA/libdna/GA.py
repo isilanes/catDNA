@@ -34,7 +34,8 @@ class Genome:
 
     def run(self):
         # Print message:
-        print("Running genome: {0} - ".format(self.seq2str()), end='')
+        id = self.seq2str()
+        print("Running genome: {0} - ".format(id), end='')
         print(" "*4, end="")
         sys.stdout.flush()
 
@@ -44,20 +45,18 @@ class Genome:
             f.write(string)
 
         # Do compile:
-        id = self.seq2str()
         cmnd = './build-ga.sh {0} && mv catDNA-{0} arena/'.format(id)
         build = sp.Popen(cmnd, shell=True)
         build.communicate()
 
         # Run matches, and print progress:
-        logfile = 'log/{0}.log'.format(self.seq2str())
+        logfile = 'log/{0}.log'.format(id)
         cmnd = './run.sh {0} > {1}'.format(id, logfile)
         run = sp.Popen(cmnd, shell=True)
         fn = 'log/{0}.pgn'.format(id)
         cmnd = 'grep -c Result {0}'.format(fn)
         while run.poll() == None:
             if os.path.isfile(fn):
-                cmnd = 'grep -c Result {0}'.format(fn)
                 grep = sp.Popen(cmnd, stdout=sp.PIPE, shell=True)
                 out, err = grep.communicate()
                 if out:
